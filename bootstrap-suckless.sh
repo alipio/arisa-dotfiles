@@ -10,7 +10,7 @@ NC='\033[0m' # No Color
 
 TEMP_DIR=""
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PKGS=(
+BASE_PKGS=(
   base-devel git curl man-db less neovim stow libyaml
   arandr autorandr libnotify picom nitrogen dunst unclutter
   flameshot brightnessctl xsel sxhkd redshift xdotool
@@ -101,10 +101,10 @@ update_system() {
   sudo pacman -Su --noconfirm
 }
 
-install_base_packages() {
+install_packages() {
   log_info "Installing base packages..."
 
-  sudo pacman -S --needed --noconfirm "${PKGS[@]}"
+  sudo pacman -S --needed --noconfirm "${BASE_PKGS[@]}"
 }
 
 install_aur_packages() {
