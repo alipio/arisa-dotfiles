@@ -42,13 +42,13 @@ log_error() {
   printf "${RED}[X] Error:${NC} %s\n" "$@"
 }
 
-clean_up() {
+cleanup() {
   if [[ -n "$TEMP_DIR" && -d "$TEMP_DIR" ]]; then
     rm -rf "$TEMP_DIR"
   fi
 }
 
-error_exit() {
+error_handler() {
   local exit_code=$?
   log_error "Script failed with exit code $exit_code at line $LINENO"
   exit $exit_code
@@ -75,7 +75,8 @@ check_arch() {
   fi
 }
 
-configure_pacman() {
+optimize_pacman() {
+  log_info "Optimizing pacman config..."
   # Enable parallel downloads for faster installation.
   sudo sed -i 's/^#ParallelDownloads/ParallelDownloads/' /etc/pacman.conf
   sudo sed -i 's/^#Color/Color/' /etc/pacman.conf
@@ -136,8 +137,8 @@ XDG_PUBLICSHARE_DIR="$HOME"
 EOF
 }
 
-deploy_dotfiles() {
-  log_info "Deploying dotfiles..."
+deploy_configs() {
+  log_info "Deploying configs..."
 
   # Sometimes there's a bashrc.
   rm -f ~/.bashrc
@@ -145,23 +146,55 @@ deploy_dotfiles() {
   cd ~/git
   stow --ignore "^(suckless|bootstrap)" dotfiles
   cd - >/dev/null
+  # keyd config.
+  sudo mkdir -p /etc/keyd
+  sudo ln -sf ~/.config/keyd/default.conf /etc/keyd/default.conf
 }
 
-# TODO: set up GH ssh key
+install_bitwarden_cli() {
+  if ! command -v bw >/dev/null; then
+    log_info "Installing Bitwarden CLI..."
+    curl -fsL "https://bitwarden.com/download/?app=cli&platform=linux" -o "$TEMP_DIR/bw.zip"
+    pushd "$TEMP_DIR" >/dev/null
+    unzip -q bw.zip
+    sudo install -m755 bw -t /usr/local/bin
+    rm bw
+    popd "$TEMP_DIR" >/dev/null
+  fi
+}
 
-# Main execution function
+setup_github_ssh_key() {
+  [ ! -r ~/.bw.env ] && return 0
+  log_info "Setting up GitHub SSH key..."
+  set -a
+  . ~/.bw.env
+  set +a
+  bw login --apikey
+  eval "$(bw unlock --passwordenv BW_PASSWORD)"
+  mkdir -p ~/.ssh
+  bw get notes id_rsa_github > ~/.ssh/id_rsa
+  ssh-keyscan -p 22 -H github.com gitlab.com > ~/.ssh/known_hosts
+  chown -R "$USER":"$USER" ~/.ssh
+  chmod 700 ~/.ssh
+  chmod 600 ~/.ssh/*
+}
+
+set_zsh_as_default_shell() {
+  log_info "Setting zsh as default shell..."
+  sudo chsh -s "$(which zsh)" "$USER"
+}
+
 main() {
   log_info "Starting Arch Linux suckless bootstrap..."
 
-  trap clean_up EXIT
-  trap error_exit ERR
+  trap cleanup EXIT
+  trap error_handler ERR
 
   check_root
   check_arch
 
   create_temp_dir
 
-  # Confirm with user
   echo ""
   log_warning "This script will install packages and modify system configuration."
   log_warning "Make sure you have a stable internet connection."
@@ -174,7 +207,7 @@ main() {
   fi
 
   # Execute installation steps
-  configure_pacman
+  optimize_pacman
   install_yay
   update_system
   install_base_packages
@@ -182,7 +215,10 @@ main() {
   install_suckless
   enable_services
   create_user_dirs
-  deploy_dotfiles
+  deploy_configs
+  install_bitwarden_cli
+  setup_github_ssh_key
+  set_zsh_as_default_shell
 
   log_info "Bootstrap completed successfully!"
   log_info "Please reboot or run 'startx' to start the desktop environment"
