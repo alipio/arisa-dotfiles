@@ -1,0 +1,24 @@
+#!/bin/sh
+
+. "$HOME"/.local/bin/internal
+
+get() {
+  [ ! -f /sys/class/power_supply/BAT0/capacity ] && return 1
+
+  acpi_output=$(acpi -b)
+
+  battery_perc="${acpi_output#*, }"
+  battery_perc="${battery_perc%%,*}"
+  battery_status="${acpi_output#*: }"
+  battery_status="${battery_status%%,*}"
+
+  case $battery_status in
+    Discharging) battery_symbol="-" ;;
+    Charging) battery_symbol="+" ;;
+    *) battery_symbol="o" ;;
+  esac
+
+  echo "$battery_perc $battery_symbol"
+}
+
+main "󱊣"

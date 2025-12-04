@@ -1,0 +1,22 @@
+# TODO: ensure pure prompt dir is added to fpath before we call promptinit
+autoload -U promptinit && promptinit
+prompt pure
+
+autoload -U compinit
+compinit
+
+setopt autocd
+setopt extendedglob
+setopt no_nomatch
+setopt noglobdots
+
+stty -ixon # Disable ctrl-s to freeze terminal.
+
+source ~/.config/zsh/rc.d/keys.zsh
+source ~/.config/zsh/rc.d/history.zsh
+source ~/.config/zsh/rc.d/completion.zsh
+source ~/.config/zsh/rc.d/aliases.zsh
+source ~/.config/zsh/rc.d/correction.zsh
+source ~/.config/zsh/rc.d/stack.zsh
+
+source /usr/share/zsh/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh 2>/dev/null || true

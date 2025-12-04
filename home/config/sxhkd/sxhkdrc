@@ -1,0 +1,74 @@
+XF86AudioRaiseVolume
+    amixer sset Master 5%+ ; pkill -RTMIN+14 dwmblocks
+
+XF86AudioLowerVolume
+    amixer sset Master 5%- ; pkill -RTMIN+14 dwmblocks
+
+XF86AudioMute
+    amixer sset Master toggle ; pkill -RTMIN+14 dwmblocks
+
+XF86MonBrightnessUp
+    brightnessctl set 5%+
+
+XF86MonBrightnessDown
+    brightnessctl set 5%-
+
+Print
+    flameshot gui
+
+super + Escape
+    slock
+
+super + shift + s
+    slock & systemctl suspend
+
+super + shift + d
+    sysp
+
+super + r
+    autorandr --change --force && nitrogen --restore
+
+super + n
+    alacritty --title nmtui --command nmtui
+
+super + u
+    alacritty --title bluetuith --command bluetuith
+
+super + s
+    arandr
+
+super + v
+    pavucontrol
+
+super + o
+    thunar
+
+super + shift + p
+    clipmenu -nb '#1C1917' -nf '#CFC1BA' -sb '#2C363C' -sf '#F0EDEC'
+
+super + shift + c
+    clipctl toggle ; pkill -RTMIN+10 dwmblocks
+
+super + c
+    clipdel -d ".*"
+
+super + a
+    dunstctl close
+
+super + shift + a
+    dunstctl set-paused toggle ; pkill -RTMIN+12 dwmblocks
+
+super + w
+    thorium-browser
+
+super + e
+    pgrep screenkey || screenkey --show-settings
+
+super + shift + e
+    pkill screenkey
+
+super + shift + m
+    power set ; pkill -RTMIN+16 dwmblocks
+
+super + shift + l
+    keemap switch ; pkill -RTMIN+18 dwmblocks
