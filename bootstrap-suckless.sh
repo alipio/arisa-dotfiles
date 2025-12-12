@@ -9,7 +9,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 TEMP_DIR=""
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BASE_PKGS=(
   base-devel git curl man-db less neovim stow libyaml
   arandr autorandr libnotify picom nitrogen dunst unclutter
@@ -75,8 +75,8 @@ check_arch() {
   fi
 }
 
-optimize_pacman() {
-  log_info "Optimizing pacman config..."
+configure_pacman() {
+  log_info "Configuring pacman..."
   # Enable parallel downloads for faster installation.
   sudo sed -i 's/^#ParallelDownloads/ParallelDownloads/' /etc/pacman.conf
   sudo sed -i 's/^#Color/Color/' /etc/pacman.conf
@@ -114,7 +114,7 @@ install_aur_packages() {
 
 install_suckless() {
   log_info "Installing suckless tools..."
-  "$SCRIPT_DIR/suckless/install.sh"
+  "$REPO_ROOT/suckless/install.sh"
 }
 
 enable_services() {
@@ -143,9 +143,11 @@ deploy_configs() {
   # Sometimes there's a bashrc.
   rm -f ~/.bashrc
 
-  cd ~/git
+  pushd $REPO_ROOT >/dev/null
+  git submodule -q sync --recursive
+  git submodule -q update --init --recursive
   stow --ignore "^(suckless|bootstrap)" dotfiles
-  cd - >/dev/null
+  popd >/dev/null
   # keyd config.
   sudo mkdir -p /etc/keyd
   sudo ln -sf ~/.config/keyd/default.conf /etc/keyd/default.conf
@@ -154,8 +156,8 @@ deploy_configs() {
 install_bitwarden_cli() {
   if ! command -v bw >/dev/null; then
     log_info "Installing Bitwarden CLI..."
-    curl -fsL "https://bitwarden.com/download/?app=cli&platform=linux" -o "$TEMP_DIR/bw.zip"
     pushd "$TEMP_DIR" >/dev/null
+    curl -fsL "https://bitwarden.com/download/?app=cli&platform=linux" -o bw.zip
     unzip -q bw.zip
     sudo install -m755 bw -t /usr/local/bin
     rm bw
@@ -207,7 +209,7 @@ main() {
   fi
 
   # Execute installation steps
-  optimize_pacman
+  configure_pacman
   install_yay
   update_system
   install_base_packages

@@ -1,0 +1,6 @@
+.*.sw*
+.*.un*
+tags
+.env
+.projections.json
+/scratch

@@ -1,0 +1,45 @@
+[general]
+import = ["~/.config/alacritty/themes/gruvbox_dark.toml"]
+
+[font]
+size = 16
+
+[font.bold]
+family = "JetBrainsMono Nerd Font Mono"
+style = "Bold"
+
+[font.italic]
+family = "JetBrainsMono Nerd Font Mono"
+style = "Italic"
+
+[font.normal]
+family = "JetBrainsMono Nerd Font Mono"
+style = "Regular"
+
+[font.offset]
+x = 0
+y = 2
+
+[[hints.enabled]]
+action = "Copy"
+mouse.enabled = true
+regex = "[a-f0-9]{40}|[a-f0-9]{7}"
+
+[[keyboard.bindings]]
+action = "ScrollLineUp"
+key = "ArrowUp"
+mode = "~Alt"
+mods = "Control|Shift"
+
+[[keyboard.bindings]]
+action = "ScrollLineDown"
+key = "ArrowDown"
+mode = "~Alt"
+mods = "Control|Shift"
+
+[selection]
+save_to_clipboard = true
+
+[window.padding]
+x = 4
+y = 4

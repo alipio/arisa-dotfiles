@@ -1,22 +1,59 @@
-# TODO: ensure pure prompt dir is added to fpath before we call promptinit
-autoload -U promptinit && promptinit
-prompt pure
+# If not running interactively, don't do anything
+[[ $- =~ i ]] || return
 
-autoload -U compinit
-compinit
+# Plugins
+zsh_load_plugins() {
+  local plugin
+  for plugin ($@); do
+    if [ -r "${ZDOTDIR:-$XDG_CONFIG_HOME/zsh}/plugins/$plugin/$plugin.zsh" ]; then
+      source "${ZDOTDIR:-$XDG_CONFIG_HOME/zsh}/plugins/$plugin/$plugin.zsh" 2>/dev/null
+    elif [ -r "${ZDOTDIR:-$XDG_CONFIG_HOME/zsh}/plugins/$plugin/$plugin.plugin.zsh" ]; then
+      source "${ZDOTDIR:-$XDG_CONFIG_HOME/zsh}/plugins/$plugin/$plugin.plugin.zsh" 2>/dev/null
+    elif [ -r "${ZDOTDIR:-$XDG_CONFIG_HOME/zsh}/plugins/$plugin/$plugin.zsh-theme" ]; then
+      source "${ZDOTDIR:-$XDG_CONFIG_HOME/zsh}/plugins/$plugin/$plugin.zsh-theme"  2>/dev/null
+    else
+      echo "$funcstack[1]: Unable to load '$plugin'." >&2
+    fi
+  done
+}
+
+zsh_update_plugins() {
+  local plugin
+  for plugin (${ZDOTDIR:-$XDG_CONFIG_HOME/zsh}/plugins/*(N/)); do
+    git -C "$plugin" rev-parse --is-inside-work-tree >/dev/null 2>&1 || continue
+    printf '%s: ' "$plugin:t"
+    git -C "$plugin" remote -v | grep -q upstream && { git -C "$plugin" fetch upstream || printf '%s: Could not fetch upstream...\n' "$plugin:t" }
+    git -C "$plugin" pull 2>/dev/null || echo "Unable to upgrade."
+  done
+}
 
 setopt autocd
 setopt extendedglob
 setopt no_nomatch
 setopt noglobdots
 
-stty -ixon # Disable ctrl-s to freeze terminal.
+plugins=(
+  editor
+  completion
+  history
+  aliases
+  stack
+  utils
+  prompt
+  zsh-z
+)
+zsh_load_plugins $plugins
 
-source ~/.config/zsh/rc.d/keys.zsh
-source ~/.config/zsh/rc.d/history.zsh
-source ~/.config/zsh/rc.d/completion.zsh
-source ~/.config/zsh/rc.d/aliases.zsh
-source ~/.config/zsh/rc.d/correction.zsh
-source ~/.config/zsh/rc.d/stack.zsh
+autoload -U compinit
+if [[ $HOME/.zcompdump(#qNmh-20) ]]; then
+  compinit -C
+else
+  compinit -i
+fi
 
-source /usr/share/zsh/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh 2>/dev/null || true
+# Local config
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+
+source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 2>/dev/null
+
+true
