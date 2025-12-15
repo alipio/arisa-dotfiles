@@ -48,7 +48,6 @@ static const Rule rules[] = {
     { NULL,             NULL,       "bluetuith",            0,            1,           -1 },
     { NULL,             NULL,       "Screen Layout Editor", 0,            1,           -1 },
     { NULL,             NULL,       "Volume Control",       0,            1,           -1 },
-    { NULL,             NULL,       "Onboard",              0,            1,           -1 },
     { NULL,             NULL,       "ColorPicker",          0,            1,           -1 },
 };
 
@@ -86,10 +85,10 @@ static const char *termcmd[]  = { termname, NULL };
 #include "movestack.c"
 static const Key keys[] = {
 	/* modifier                     key        function        argument */
-    // Program related keybindings
+	// Program related keybindings
 	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
-    { MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
-    // WM related keybindings
+	{ MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
+	// WM related keybindings
 	{ MODKEY|ShiftMask,             XK_b,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
@@ -113,7 +112,7 @@ static const Key keys[] = {
 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
-    { MODKEY,                       XK_minus,  setgaps,        {.i = +4 } },
+	{ MODKEY,                       XK_minus,  setgaps,        {.i = +4 } },
 	{ MODKEY|ShiftMask,             XK_minus,  setgaps,        {.i = -4 } },
 	/* { MODKEY|ShiftMask,             XK_equal,  setgaps,        {.i = 0  } }, */
 	TAGKEYS(                        XK_1,                      0)
@@ -139,4 +138,3 @@ static const Button buttons[] = {
 	{ ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
 	{ ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
 };
-

@@ -1,0 +1,642 @@
+" ~/.vimrc
+" vim: fdm=marker
+
+set encoding=utf-8
+scriptencoding utf-8
+
+if !empty($XDG_DATA_HOME)
+  let s:data_home = substitute($XDG_DATA_HOME, '/$', '', '') . '/vim'
+else
+  let s:data_home = expand('~/.local/share/vim')
+endif
+
+let mapleader = "\<Space>"
+let maplocalleader = "\\"
+let g:polyglot_disabled = ['sensible', 'markdown', 'elixir']
+
+" Plug {{{1
+let g:plug_window = 'enew'
+
+call plug#begin('~/.local/share/vim/plugged')
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+Plug 'scrooloose/nerdtree'
+
+Plug 'michaeljsmith/vim-indent-object'
+Plug 'Raimondi/delimitMate'
+Plug 'tommcdo/vim-lion'
+Plug 'mhinz/vim-sayonara'
+Plug 'mhinz/vim-grepper'
+
+Plug 'tommcdo/vim-exchange'
+Plug 'yegappan/greplace'
+Plug 'vim-scripts/regreplop.vim'
+Plug 'AndrewRadev/splitjoin.vim'
+Plug 'AndrewRadev/multichange.vim'
+Plug 'AndrewRadev/sideways.vim'
+
+Plug 'tpope/vim-abolish'
+Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-endwise'
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-projectionist'
+Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-unimpaired'
+
+Plug 'elixir-editors/vim-elixir'
+Plug 'fatih/vim-go'
+Plug 'preservim/vim-markdown'
+Plug 'sheerun/vim-polyglot'
+Plug 'tpope/vim-rails'
+Plug 'vim-ruby/vim-ruby'
+
+Plug 'pbrisbin/vim-mkdir'
+Plug 'dense-analysis/ale'
+Plug 'hrsh7th/vim-vsnip'
+Plug 'terryma/vim-smooth-scroll'
+Plug 'ton/vim-bufsurf'
+nmap [b <Plug>(buf-surf-back)
+nmap ]b <Plug>(buf-surf-forward)
+
+Plug 'morhetz/gruvbox'
+Plug 'ap/vim-css-color'
+Plug 'arp242/batchy.vim'
+Plug 'janko-m/vim-test'
+Plug 'alipio/vviki'
+Plug 'deris/vim-rengbang'
+Plug 'vim-scripts/SyntaxAttr.vim'
+Plug 'folke/tokyonight.nvim', { 'rtp': 'extras/vim' }
+if filereadable(expand("~/.vimrc.bundles.local"))
+  source ~/.vimrc.bundles.local
+endif
+
+call plug#end()
+
+" Init {{{1
+filetype plugin indent on
+syntax enable
+
+" Load matchit.vim, but only if the user hasn't installed a newer version.
+if !exists('g:loaded_matchit') && findfile('plugin/matchit.vim', &rtp) ==# ''
+  runtime! macros/matchit.vim
+endif
+
+" Enable the :Man command shipped inside Vim's man filetype plugin.
+if exists(':Man') != 2 && !exists('g:loaded_man') && &filetype !=? 'man' && !has('nvim')
+  runtime ftplugin/man.vim
+endif
+
+let g:loaded_2html_plugin     = 1
+let g:loaded_getscriptPlugin  = 1
+let g:loaded_gzip             = 1
+let g:loaded_logipat          = 1
+let g:loaded_rrhelper         = 1
+let g:loaded_spellfile_plugin = 1
+let g:loaded_tarPlugin        = 1
+let g:loaded_vimballPlugin    = 1
+let g:loaded_zipPlugin        = 1
+
+augroup vimrc
+  au!
+augroup END
+
+" Option {{{1
+" Section: Indent settings
+set autoindent
+set expandtab
+set shiftround
+set smarttab
+set shiftwidth=2
+
+" Section: Better navigation
+set foldlevelstart=99
+set foldmethod=indent
+set foldopen-=hor
+set foldtext=utils#MyFoldText()
+set hlsearch
+set ignorecase
+set incsearch
+set mouse=a
+set scrolloff=0
+set sidescroll=1
+set sidescrolloff=1
+set smartcase
+set tagcase=match
+
+" Section: Editing
+set backspace=2
+set complete-=i
+set completeopt=menuone,noselect
+set formatoptions=croqnj
+set infercase
+set nojoinspaces
+set pumheight=20
+
+" Section: Display settings
+set display+=lastline
+set laststatus=2
+set list
+set listchars=tab:»\ ,trail:·,extends:❯,precedes:❮,nbsp:␣
+set nowrap
+set number
+set ruler
+set shortmess=acTOI
+set showcmd
+set showmode
+set signcolumn=number
+
+" Status line setup
+function! SlFilename()
+  let l:fname = expand('%:.')
+  return (l:fname != '' ? l:fname : '[No name]')
+endfunction
+set statusline=%{SlFilename()}
+set statusline+=\ " whitespace
+
+" file type
+set statusline+=%y
+
+" display a warning if file encoding isnt utf-8
+set statusline+=%#errormsg#
+set statusline+=%{(&fenc!='utf-8'&&&fenc!='')?'['.&fenc.']':''}
+set statusline+=%*
+
+" read only flag
+set statusline+=%r
+
+" modified flag
+set statusline+=%m
+
+set statusline+=%=    " left/right separator
+set statusline+=%v,   " cursor screen column
+set statusline+=%l/%L " cursor line/total lines
+set statusline+=\ %P  " percent through file
+
+augroup vimrc
+  autocmd InsertEnter * set listchars-=trail:·
+  autocmd InsertLeave * set listchars+=trail:·
+augroup END
+
+" Section: Files
+set autoread
+set nobackup
+set noswapfile
+set nowritebackup
+set undofile
+set updatetime=2000
+if has('nvim')
+  set shada=!,'100,<0
+else
+  let &undodir = s:data_home . '/undo//'
+  if !isdirectory(&undodir) | call mkdir(&undodir, 'p') | endif
+  let &viminfo = "!,'100,<0,n" . s:data_home . '/viminfo'
+endif
+
+" Section: Command-line
+set history=1000
+set wildmenu
+set wildmode=list:longest,full
+set wildignore+=*.sqlite3,*.pyc,*.beam,*.so,*~
+
+" Section: Misc settings
+set belloff=all
+set exrc
+set modeline
+set noequalalways
+set nrformats-=octal
+set report=0
+set secure
+set splitbelow
+set splitright
+set synmaxcol=200
+set tags^=.git/tags;~
+set tildeop
+set timeoutlen=500
+set ttyfast
+set viewoptions=cursor,folds
+
+" Allow for mappings including `Esc`, while preserving
+" zero timeout after pressing it manually.
+if !has('nvim') && &ttimeoutlen == -1
+  set ttimeout ttimeoutlen=50
+end
+
+" Color scheme {{{1
+if exists('+termguicolors')
+  set termguicolors
+  if !has('nvim')
+    let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+    let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+  endif
+endif
+
+let g:gruvbox_contrast_dark = 'soft'
+let g:gruvbox_italic = 0
+let g:gruvbox_sign_column = 'dark0_soft'
+set background=dark
+silent! colorscheme tokyonight-storm
+" silent! colorscheme gruvbox
+
+" Mappings {{{1
+nnoremap s <nop>
+nnoremap <space> <nop>
+nnoremap Q gqap
+nnoremap c "_c
+nnoremap C "_C
+xnoremap c "_c
+xnoremap C "_C
+xnoremap . :normal .<cr>
+nnoremap Y y$
+nnoremap U <c-r>
+
+" Focus the next window in the specified direction. If there is no window in
+" that direction, create one.
+function! FocusOrCreateWin(dir)
+  let t:curwin = winnr()
+  exec "wincmd ".a:dir
+  if (t:curwin == winnr())
+    if (a:dir =~ '[jk]')
+      wincmd s
+    else
+      wincmd v
+    endif
+    exec "wincmd ".a:dir
+  endif
+endfunction
+nnoremap <silent><c-h> :call FocusOrCreateWin('h')<cr>
+nnoremap <silent><c-j> :call FocusOrCreateWin('j')<cr>
+nnoremap <silent><c-k> :call FocusOrCreateWin('k')<cr>
+nnoremap <silent><c-l> :call FocusOrCreateWin('l')<cr>
+
+nnoremap <left>  3<c-w>>
+nnoremap <right> 3<c-w><
+nnoremap <up>    <c-w>-
+nnoremap <down>  <c-w>+
+
+nmap <silent><expr><leader>a exists(':A') == 2 ? "\<Cmd>A<cr>" : ""
+
+" Copy the most recent yanked text to clipboard.
+if exists('$WAYLAND_DISPLAY')
+  nmap <silent><leader>y :call system('wl-copy', @0)<cr>
+else
+  nmap <silent><leader>y :call system('xclip -sel clip', @0)<cr>
+endif
+
+" Save buffer.
+noremap <silent><leader>w :update!<cr>
+
+" Open Vim configuration file for editing.
+noremap <silent><leader>ev :sp $MYVIMRC<cr>
+
+" Tags.
+nmap <C-]> g<C-]>
+
+nmap <silent><leader>cp :let @z=expand("%:.")<bar>call system('xclip -sel clip', @z)<cr>
+nmap <silent><leader>cf :let @z=expand("%:p")<bar>call system('xclip -sel clip', @z)<cr>
+nmap <silent><leader>cl :let @z=expand("%:.").":".line('.')<bar>call system('xclip -sel clip', @z)<cr>
+
+" Sane regexps.
+nnoremap / /\v
+vnoremap / /\v
+
+" Clear search highlights.
+nnoremap <silent><C-@> :noh<bar>diffupdate<bar>XchangeClear<cr><c-l>
+nmap <silent><C-Space> <C-@>
+
+" Reselect visual block after indent/outdent.
+vnoremap < <gv
+vnoremap > >gv
+
+" Switch between the last two files.
+nnoremap <leader><leader> <C-^>
+
+" Quit all other splits.
+nnoremap <leader>o :only<cr>
+
+nmap sr :%s/\<<C-r><C-w>\>//g<Left><Left>
+nmap sR :%s/\V<C-r><C-a>//g<Left><Left>
+xmap sr "sy:%s/\V<c-r>s//g<left><left>
+
+" Show last search in quickfix (http://travisjeffery.com/b/2011/10/m-x-occur-for-vim/)
+nmap g/ :vimgrep /<c-r>//j %<cr>\|:cw<cr>
+
+" `Ctrl-U` in insert mode deletes a lot. Use `Ctrl-G` u to first break undo,
+" so that you can undo `Ctrl-U` without undoing what you typed before it.
+inoremap <c-u> <c-g>u<c-u>
+
+function! ToggleQuickFix()
+  if empty(filter(getwininfo(), 'v:val.quickfix'))
+    copen
+  else
+    cclose
+  endif
+endfunction
+nnoremap <C-q> :call ToggleQuickFix()<cr>
+
+function! TabComplete()
+  if pumvisible()
+    return "\<c-n>"
+  endif
+  let line = getline('.')
+  let col = col('.') - 2
+  if empty(line) || line[col] !~ '\k\|[/~.]' || line[col + 1] =~ '\k'
+    return "\<tab>"
+  endif
+  let prefix = expand(fnameescape(matchstr(line[0:col], '\S*$')))
+  if prefix =~ '^[~/.]'
+    return "\<c-x>\<c-f>"
+  endif
+  if !empty(&completefunc)
+    return "\<c-x>\<c-u>"
+  endif
+  if !empty(&omnifunc)
+    return "\<c-x>\<c-o>"
+  endif
+  return "\<c-n>"
+endfunction
+inoremap <tab> <C-r>=TabComplete()<cr>
+inoremap <expr><S-tab> pumvisible() ? "\<C-p>" : ""
+
+noremap <silent><C-u> :call smooth_scroll#up(&scroll, 40, 2)<cr>
+noremap <silent><C-d> :call smooth_scroll#down(&scroll, 40, 2)<cr>
+
+function! VSetSearch()
+  let regsave = @@
+  normal! gvy
+  let @/ = '\V' . substitute(escape(@@, '\'), '\n', '\\n', 'g')
+  let @@ = regsave
+endfunction
+xnoremap * :<C-u>call VSetSearch()<cr>//<cr>
+xnoremap # :<C-u>call VSetSearch()<cr>??<cr>
+
+" Section: Text objects
+" Entire buffer
+xnoremap <silent>ie gg0oG$
+onoremap <silent>ie :<c-u>execute "normal! m`"<bar>keepjumps normal! ggVG<cr>
+
+" Inner line
+xnoremap <silent>il <esc>^vg_
+onoremap <silent>il :<c-u>normal! ^vg_<cr>
+
+" Source:
+" https://stackoverflow.com/questions/44108563/how-to-delete-or-yank-inside-slashes-and-asterisks
+for char in [ '_', '.', ':', ',', ';', '<bar>', '/', '<bslash>', '*', '+', '%', '-', '#' ]
+  execute 'xnoremap i' . char . ' :<C-u>normal! T' . char . 'vt' . char . '<CR>'
+  execute 'onoremap i' . char . ' :normal vi' . char . '<CR>'
+  execute 'xnoremap a' . char . ' :<C-u>normal! F' . char . 'vf' . char . '<CR>'
+  execute 'onoremap a' . char . ' :normal va' . char . '<CR>'
+endfor
+
+nmap R <Plug>ReplaceMotion
+vmap R <Plug>ReplaceVisual
+nmap RR <Plug>ReplaceLine
+
+" Emacs-ish mappings
+inoremap <C-a> <C-o>0
+cnoremap <C-a> <Home>
+
+inoremap <C-b> <Left>
+cnoremap <C-b> <Left>
+
+inoremap <expr><C-d> col('.') > strlen(getline('.')) ? "\<lt>c-d>" : "\<lt>del>"
+cnoremap <expr><C-d> getcmdpos() > strlen(getcmdline()) ? "\<lt>c-d>" : "\<lt>del>"
+
+inoremap <C-e> <C-o>$
+cnoremap <C-e> <End>
+
+inoremap <expr><C-f> col('.') > strlen(getline('.')) ? "\<lt>c-f>" : "\<lt>right>"
+cnoremap <expr><C-f> getcmdpos() > strlen(getcmdline()) ? &cedit : "\<lt>right>"
+
+cnoremap <M-b> <S-Left>
+cnoremap <M-f> <S-Right>
+silent! exe "set <S-left>=\eb"
+silent! exe "set <S-right>=\ef"
+
+" Rename current file
+function! RenameFile()
+  let old_name = expand('%')
+  let new_name = input('New file name: ', expand('%'))
+  if new_name != '' && new_name != old_name
+    exec ':saveas ' . new_name
+    exec ':silent !rm ' . old_name
+    redraw!
+  endif
+endfunction
+nmap <leader>rn :call RenameFile()<cr>
+
+" Zoom
+function! s:zoom()
+  if winnr('$') > 1
+    tab split
+  elseif len(filter(map(range(tabpagenr('$')), 'tabpagebuflist(v:val + 1)'),
+        \ 'index(v:val, '.bufnr('').') >= 0')) > 1
+    tabclose
+  endif
+endfunction
+nnoremap <silent><leader>z :call <sid>zoom()<cr>
+
+if &term =~ "screen" || &term =~ "alacritty" || &term =~ "st"
+  let &t_BE = "\e[?2004h"
+  let &t_BD = "\e[?2004l"
+  exec "set t_PS=\e[200~"
+  exec "set t_PE=\e[201~"
+endif
+
+" Fix Cursor in tmux.
+" if exists('$TMUX')
+"   let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=1\x7\<Esc>\\"
+"   let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=0\x7\<Esc>\\"
+"   set ttymouse=xterm2
+" else
+"   let &t_SI = "\<Esc>[6 q"
+"   let &t_SR = "\<Esc>[4 q"
+"   let &t_EI = "\<Esc>[2 q"
+" endif
+let &t_SI = "\<Esc>[6 q"
+let &t_SR = "\<Esc>[4 q"
+let &t_EI = "\<Esc>[2 q"
+
+" Autocmds {{{1
+augroup vimrc
+  au BufRead,BufNewFile *.md set filetype=markdown
+  au FileType markdown hi link markdownError NONE
+
+  au BufWritePre *
+        \ if !exists('g:skip_clean_whitespace') && !exists('b:skip_clean_whitespace') |
+        \   exe "CleanWhitespace"                                                     |
+        \ endif
+
+  " When vimrc is edited, reload it.
+  au BufWritePost $MYVIMRC source $MYVIMRC
+
+  " Check if the buffer needs to be refreshed from disk (using 'autoread').
+  au FocusGained,BufEnter * checktime
+  au CursorHold * checktime
+
+  au BufRead,BufNewFile *.ex,*.exs setl filetype=elixir
+  au BufRead,BufNewFile *.eex,*.heex,*.leex,*.sface,*.lexs setl filetype=eelixir
+  au BufRead,BufNewFile mix.lock setl filetype=elixir
+
+  au FileType go setl noexpandtab ts=4 sw=4 sts=-1
+
+  au BufRead,BufNewFile 0bsd setl filetype=txt
+
+  " When editing a file, always jump to the last known cursor position.
+  " Don't do it for commit messages, when the position is invalid, or when
+  " inside an event handler (happens when dropping a file on gvim).
+  au BufReadPost *
+        \ if &ft != 'gitcommit' && line("'\"") > 0 && line("'\"") <= line("$") |
+        \   exe "normal g`\"" |
+        \ endif
+augroup END
+
+" Commands {{{1
+command! SudoWrite execute 'silent! write !sudo tee % >/dev/null'<bar>edit!
+cabbrev suw SudoWrite
+
+" Copy a snippet of code without its initial whitespace.
+command! -range Snip call s:Snip(<line1>, <line2>)
+function! s:Snip(from, to)
+  let lines = getbufline('%', a:from, a:to)
+  let non_empty_lines = filter(copy(lines), {_, l -> l !~ '^\s*$'})
+  let min_whitespace_count = min(map(non_empty_lines, {_, l -> len(matchstr(l, '^\s*'))}))
+
+  if min_whitespace_count > 0
+    let whitespace_pattern = '^'.repeat('\s', min_whitespace_count)
+    call map(lines, {_, l -> substitute(l, whitespace_pattern, '', '')})
+  endif
+
+  let snippet = join(lines, "\n")
+
+  call setreg('"', snippet, 'V')
+  call system('xclip -sel clip', snippet)
+endfunction
+
+cabbrev snip Snip
+
+" Clean trailing whitespace.
+command! CleanWhitespace call s:CleanWhitespace()
+function! s:CleanWhitespace()
+  let save = winsaveview()
+  keeppattern :%s/\s\+$//e
+  call winrestview(save)
+endfunction
+
+" Plugins {{{1
+let $FZF_DEFAULT_COMMAND = 'ag --silent --nocolor --follow -g "" --literal --hidden --ignore .git'
+let g:fzf_preview_window = ['right:hidden', 'ctrl-/']
+nnoremap <leader>ff :Files<cr>
+nnoremap <leader>fb :Buffers<cr>
+nnoremap <leader>fl :BLines<cr>
+nnoremap <leader>fg :Ag<cr>
+
+let g:NERDTreeQuitOnOpen = 1
+let g:NERDTreeIgnore = ['\~$', '^tags$']
+let g:NERDTreeMinimalMenu = 1
+let g:NERDTreeMinimalUI = 1
+let g:NERDTreeMapOpenVSplit = '<C-v>'
+let g:NERDTreeMapCWD = '.'
+let g:NERDTreeMapChangeRoot = 'C'
+let g:NERDTreeCascadeSingleChildDir = 0
+let g:NERDTreeHighlightCursorline = 0
+let g:NERDTreeBookmarksFile = s:data_home . '/NERDTreeBookmarks'
+nnoremap <leader>nn :NERDTreeToggle<cr>
+nnoremap <leader>nf :NERDTreeFind<cr>
+
+let g:ale_linters = { 'ruby': ['standardrb'], 'go': ['golangci-lint'] }
+let g:ale_fixers = { 'ruby': ['standardrb'] }
+let g:ale_linters_explicit = 1
+let g:ale_fix_on_save = 0
+let g:ale_set_highlights = 0
+let g:ale_lint_on_text_changed = 'never'
+let g:ale_lint_on_insert_leave = 0
+let g:ale_lint_on_enter = 1
+let g:ale_sign_error = '➤'
+let g:ale_sign_warning = '➤'
+
+" vim-ruby settings
+let g:ruby_indent_assignment_style = 'variable'
+let g:ruby_indent_hanging_elements = 0
+let g:ruby_indent_block_style = 'do'
+let g:ruby_operators = 1
+
+" built-in HTML indenting
+let g:html_indent_inctags = 'html,head,body,li,p'
+
+let g:vim_markdown_no_extensions_in_markdown = 1
+let g:vim_markdown_new_list_item_indent = &shiftwidth
+
+" Splitjoin
+let g:splitjoin_split_mapping        = ''
+let g:splitjoin_join_mapping         = ''
+let g:splitjoin_normalize_whitespace = 1
+let g:splitjoin_ruby_hanging_args    = 0
+nmap <silent> sj <Plug>SplitjoinSplit
+nmap <silent> sk <Plug>SplitjoinJoin
+
+" surround.vim
+let g:surround_indent = 1
+let g:surround_no_insert_mappings = 1
+
+" vim-exchange
+let g:exchange_no_mappings = 1
+nmap X <Plug>(Exchange)
+xmap X <Plug>(Exchange)
+nmap XX <Plug>(ExchangeLine)
+
+" Multichange
+let g:multichange_mapping        = 'sm'
+let g:multichange_motion_mapping = 'm'
+let g:multichange_save_position  = 1
+
+" delimitMate + endwise
+let g:endwise_no_mappings = 1 " NOTE: must be unset instead of 0
+let g:delimitMate_expand_space = 0
+let g:delimitMate_expand_inside_quotes = 0
+imap <expr><cr> pumvisible() ? "\<C-y>" : "\<plug>delimitMateCR\<plug>DiscretionaryEnd"
+
+" vim-sayonara
+nnoremap <silent><leader>q :Sayonara<cr>
+nnoremap <silent><leader>Q :Sayonara!<cr>
+let g:sayonara_confirm_quit = 0
+
+" vim-grepper
+nnoremap <leader>g :Grepper<cr>
+nmap gs <plug>(GrepperOperator)
+xmap gs <plug>(GrepperOperator)
+nnoremap <leader>* :Grepper -tool ag -cword -noprompt<cr>
+
+let g:grepper = {}
+let g:grepper.tools = ['ag', 'git', 'grep']
+let g:grepper.jump = 1
+let g:grepper.switch = 0
+
+exe "command! Todo Grepper -noprompt -tool git -query -E '(TODO|FIX|FIXME|XXX|NOTE|HACK|OPTIMIZE):'"
+
+" vim-vsnip
+let g:vsnip_snippet_dir = expand('~/.vim/snip')
+let g:vsnip_filetypes = {}
+let g:vsnip_filetypes.ruby = ['rails']
+imap <expr><C-j> vsnip#available(1) ? "<Plug>(vsnip-expand-or-jump)" : "<C-j>"
+imap <expr><C-k> vsnip#jumpable(-1) ? "<Plug>(vsnip-jump-prev)"      : "<C-k>"
+
+" vim-test
+let test#ruby#rspec#options = { 'all': 'COVERAGE=0' }
+nmap <silent><leader>tt <cmd>TestNearest<cr>
+nmap <silent><leader>tf <cmd>TestFile<cr>
+nmap <silent><leader>ts <cmd>TestSuite<cr>
+nmap <silent><leader>tl <cmd>TestLast<cr>
+
+" sideways.vim
+omap aa <Plug>SidewaysArgumentTextobjA
+xmap aa <Plug>SidewaysArgumentTextobjA
+omap ia <Plug>SidewaysArgumentTextobjI
+xmap ia <Plug>SidewaysArgumentTextobjI
+nnoremap sh :SidewaysLeft<cr>
+nnoremap sl :SidewaysRight<cr>
+" }}}1
+
+if filereadable(expand("~/.vimrc.local"))
+  source ~/.vimrc.local
+endif
