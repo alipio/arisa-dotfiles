@@ -1,9 +1,12 @@
 #!/bin/sh
 
 main() {
-  option=$(printf "reboot\nshutdown" | dmenu)
+  option=$(printf "sleep\nreboot\nshutdown" | dmenu)
 
   case "$option" in
+    sleep)
+        slock systemctl suspend
+        ;;
     reboot)
         systemctl reboot
         ;;

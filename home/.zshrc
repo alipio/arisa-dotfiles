@@ -29,8 +29,8 @@ zsh_update_plugins() {
 
 setopt autocd
 setopt extendedglob
+setopt no_globdots
 setopt no_nomatch
-setopt noglobdots
 
 plugins=(
   editor

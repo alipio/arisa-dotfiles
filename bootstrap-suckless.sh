@@ -9,25 +9,23 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 TEMP_DIR=""
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-BASE_PKGS=(
+DOTFILES_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BASE_DEPS=(
   base-devel git curl man-db less neovim stow libyaml
-  arandr autorandr libnotify picom nitrogen dunst unclutter
-  flameshot brightnessctl xsel sxhkd redshift xdotool
+  arandr autorandr picom libnotify dunst nitrogen unclutter
+  xsel flameshot brightnessctl sxhkd redshift xdotool
   xorg-server xorg-xinit xorg-xprop xorg-xset xorg-xsetroot
-  alacritty zsh zsh-syntax-highlighting
-  diff-so-fancy btop fzf ripgrep jq bat
-  ncdu helix reflector openssh rsync
-  ffmpeg yt-dlp plocate moreutils
-  firefox nsxiv mpv galculator lxappearance
-  zathura zathura-cb zathura-pdf-mupdf
+  alacritty zsh zsh-syntax-highlighting diff-so-fancy helix
+  btop fzf ripgrep jq bat ncdu reflector openssh rsync
+  plocate moreutils acpi sysstat nsxiv mpv ffmpeg yt-dlp
+  lxappearance firefox galculator zathura zathura-pdf-mupdf zathura-cb
   cantarell-fonts ttf-dejavu ttf-jetbrains-mono-nerd
-  noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra
+  noto-fonts noto-fonts-emoji noto-fonts-cjk noto-fonts-extra
   pulseaudio pulseaudio-alsa alsa-utils pavucontrol
-  polkit-gnome keyd power-profiles-daemon
+  gnome-keyring polkit-gnome keyd power-profiles-daemon
   thunar thunar-media-tags-plugin tumbler poppler-glib
   thunar-archive-plugin xarchiver 7zip unrar unzip xdg-utils zip
-  thunar-volman gvfs gvfs-mtp gvfs-smb udisks2
+  thunar-volman gvfs gvfs-mtp udisks2
 )
 
 log_info() {
@@ -101,20 +99,20 @@ update_system() {
   sudo pacman -Su --noconfirm
 }
 
-install_packages() {
-  log_info "Installing base packages..."
+install_base_deps() {
+  log_info "Installing base dependencies..."
 
-  sudo pacman -S --needed --noconfirm "${BASE_PKGS[@]}"
+  sudo pacman -S --needed --noconfirm "${BASE_DEPS[@]}"
 }
 
-install_aur_packages() {
-  log_info "Installing AUR packages..."
-  yay -S --needed --noconfirm asdf-vm
+install_aur_deps() {
+  log_info "Installing AUR dependencies..."
+  yay -S --needed --noconfirm asdf-vm qt5-styleplugins
 }
 
 install_suckless() {
-  log_info "Installing suckless tools..."
-  "$REPO_ROOT/suckless/install.sh"
+  log_info "Installing suckless programs..."
+  "$DOTFILES_ROOT"/suckless/install.sh
 }
 
 enable_services() {
@@ -126,15 +124,6 @@ create_user_dirs() {
   log_info "Creating basic user directories..."
   mkdir -p ~/.{config,local} \
     ~/{screenshots,notes,Downloads,Documents,Music,Pictures,Videos}
-  cat > ~/.config/user-dirs.dirs << 'EOF'
-XDG_DESKTOP_DIR="$HOME"
-XDG_DOWNLOAD_DIR="$HOME/Downloads"
-XDG_DOCUMENTS_DIR="$HOME/Documents"
-XDG_MUSIC_DIR="$HOME/Music"
-XDG_PICTURES_DIR="$HOME/Pictures"
-XDG_VIDEOS_DIR="$HOME/Videos"
-XDG_PUBLICSHARE_DIR="$HOME"
-EOF
 }
 
 deploy_configs() {
@@ -143,14 +132,17 @@ deploy_configs() {
   # Sometimes there's a bashrc.
   rm -f ~/.bashrc
 
-  pushd $REPO_ROOT >/dev/null
+  pushd $DOTFILES_ROOT >/dev/null
   git submodule -q sync --recursive
   git submodule -q update --init --recursive
   stow --ignore "^(suckless|bootstrap)" dotfiles
   popd >/dev/null
-  # keyd config.
+  # keyd config
   sudo mkdir -p /etc/keyd
   sudo ln -sf ~/.config/keyd/default.conf /etc/keyd/default.conf
+  # X11 config
+  sudo ln -sf ~/.config/X11/10-monitor.conf /etc/X11/xorg.conf.d/10-monitor.conf
+  sudo ln -sf ~/.config/X11/30-touchpad.conf /etc/X11/xorg.conf.d/30-touchpad.conf
 }
 
 install_bitwarden_cli() {
@@ -212,8 +204,8 @@ main() {
   configure_pacman
   install_yay
   update_system
-  install_base_packages
-  install_aur_packages
+  install_base_deps
+  install_aur_deps
   install_suckless
   enable_services
   create_user_dirs

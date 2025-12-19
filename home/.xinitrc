@@ -9,4 +9,4 @@ if [ -d "$xinitdir"/xinitrc.d ]; then
   unset f
 fi
 
-exec dwm > "$HOME"/.dwm/log 2>&1 ;;
+exec dwm >"$HOME"/.dwm/log 2>&1 ;;

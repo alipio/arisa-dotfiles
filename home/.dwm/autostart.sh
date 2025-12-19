@@ -2,8 +2,9 @@
 
 picom_version=$(picom --version)
 
-gnome-keyring-daemon -r -d &
-autorandr --change --force && nitrogen --restore;
+# gnome-keyring-daemon -r -d &
+/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
+autorandr --change --force && nitrogen --restore
 sxhkd &
 dwmblocks &
 clipmenud &

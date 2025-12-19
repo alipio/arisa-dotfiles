@@ -26,6 +26,6 @@ export JAVA_AWT_WM_NONREPARENTING=1 # Fix for Java applications in dwm
 export BAT_THEME=ansi
 export XDG_CURRENT_DESKTOP=dwm
 
-if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
+if [ -z "$DISPLAY" ] && [ "$(tty)" = /dev/tty1 ]; then
   exec startx
 fi

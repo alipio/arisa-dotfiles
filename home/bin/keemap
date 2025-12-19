@@ -23,8 +23,8 @@ main() {
 
 switch_keymap() {
   current_layout=$(get_keymap)
-  if [ "$current_layout" = "us" ]; then
-    setxkbmap hu
+  if [ "$current_layout" = us ]; then
+    setxkbmap br
   else
     # setxkbmap -layout us -variant altgr-intl -option nodeadkeys
     setxkbmap us
