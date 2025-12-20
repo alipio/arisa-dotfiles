@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC2034
 
 set -eu
 
@@ -10,7 +11,7 @@ NC='\033[0m' # No Color
 
 TEMP_DIR=""
 DOTFILES_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-BASE_DEPS=(
+PKGS=(
   base-devel git curl man-db less neovim stow libyaml
   arandr autorandr picom libnotify dunst nitrogen unclutter
   xsel flameshot brightnessctl sxhkd redshift xdotool
@@ -82,31 +83,26 @@ configure_pacman() {
   sudo sed -i "s/-j2/-j$(nproc)/;/^#MAKEFLAGS/s/^#//" /etc/makepkg.conf
 }
 
-install_yay() {
-  command -v yay &> /dev/null && return 0
-  log_info "Installing yay (AUR helper)..."
-  sudo pacman -S --needed --noconfirm base-devel git &>/dev/null
-  local yay_dir="$TEMP_DIR/yay"
-  git clone -q --depth 1 https://aur.archlinux.org/yay-bin.git "$yay_dir"
-  (cd "$yay_dir" && makepkg -si --noconfirm) || log_error "yay installation failed"
-  # Make sure *-git AUR packages get updated automatically.
-  yay -Y --save --devel
-}
-
 update_system() {
   log_info "Updating system..."
   sudo pacman -Syy --needed --noconfirm archlinux-keyring
   sudo pacman -Su --noconfirm
 }
 
-install_base_deps() {
-  log_info "Installing base dependencies..."
-
-  sudo pacman -S --needed --noconfirm "${BASE_DEPS[@]}"
+install_deps() {
+  log_info "Installing required dependencies..."
+  install_pkgs
+  install_suckless
+  install_bw_cli
 }
 
-install_aur_deps() {
-  log_info "Installing AUR dependencies..."
+install_pkgs() {
+  log_info "Installing required packages..."
+  install_yay || {
+    log_error "yay installation failed"
+    exit 1
+  }
+  sudo pacman -S --needed --noconfirm "${PKGS[@]}"
   yay -S --needed --noconfirm asdf-vm qt5-styleplugins
 }
 
@@ -116,25 +112,32 @@ install_suckless() {
 }
 
 install_bw_cli() {
-  if ! command -v bw >/dev/null; then
-    log_info "Installing Bitwarden CLI..."
-    pushd "$TEMP_DIR" >/dev/null
-    curl -fsL "https://bitwarden.com/download/?app=cli&platform=linux" -o bw.zip
-    unzip -q bw.zip
-    sudo install -m755 bw -t /usr/local/bin
-    rm bw
-    popd "$TEMP_DIR" >/dev/null
-  fi
+  command -v bw >/dev/null && return 0
+  log_info "Installing Bitwarden CLI..."
+  pushd "$TEMP_DIR" >/dev/null
+  curl -Lfs "https://bitwarden.com/download/?app=cli&platform=linux" -o bw.zip
+  unzip -q bw.zip
+  sudo install -m755 bw -t /usr/local/bin
+  rm bw
+  popd "$TEMP_DIR" >/dev/null
 }
 
-create_user_dirs() {
-  log_info "Creating basic user directories..."
-  mkdir -p ~/.{config,local} \
-    ~/{screenshots,notes,Downloads,Documents,Music,Pictures,Videos}
+install_yay() {
+  command -v yay &> /dev/null && return 0
+  log_info "Installing yay (AUR helper)..."
+  sudo pacman -S --needed --noconfirm base-devel git &>/dev/null
+  local yay_dir="$TEMP_DIR/yay"
+  git clone -q --depth 1 https://aur.archlinux.org/yay-bin.git "$yay_dir"
+  (cd "$yay_dir" && makepkg -si --noconfirm)
+  # Make sure *-git AUR packages get updated automatically.
+  yay -Y --save --devel
 }
 
 deploy_configs() {
   log_info "Deploying configs..."
+
+  mkdir -p ~/.{config,local} \
+    ~/{screenshots,notes,Downloads,Documents,Music,Pictures,Videos}
 
   # Sometimes there's a bashrc.
   rm -f ~/.bashrc
@@ -144,9 +147,11 @@ deploy_configs() {
   git submodule -q update --init --recursive
   stow home -t ~
   popd >/dev/null
+
   # keyd config
   sudo mkdir -p /etc/keyd
   sudo ln -sf ~/.config/keyd/default.conf /etc/keyd/default.conf
+
   # Xorg config
   sudo ln -sf ~/.config/xorg/10-monitor.conf /etc/X11/xorg.conf.d/10-monitor.conf
   sudo ln -sf ~/.config/xorg/30-touchpad.conf /etc/X11/xorg.conf.d/30-touchpad.conf
@@ -208,13 +213,8 @@ main() {
 
   # Execute installation steps
   configure_pacman
-  install_yay
   update_system
-  install_base_deps
-  install_aur_deps
-  install_suckless
-  install_bw_cli
-  create_user_dirs
+  install_deps
   deploy_configs
   enable_services
   setup_github_ssh_key

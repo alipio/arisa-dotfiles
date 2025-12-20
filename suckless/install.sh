@@ -9,7 +9,7 @@ if [ $EUID -ne 0 ]; then
   exit 1
 fi
 
-echo "Installing dependencies for suckless programs..."
+# Install required dependencies for suckless programs.
 pacman -S --needed --noconfirm libx11 libxft libxinerama libxrandr libxext \
   freetype2 fontconfig pam &>/dev/null
 
