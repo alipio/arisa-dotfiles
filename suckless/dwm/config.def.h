@@ -6,8 +6,8 @@ static const unsigned int gappx     = 4;        /* gaps between windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const char *fonts[]          = { "Hack Nerd Font:size=13" };
-static const char dmenufont[]       = "Hack Nerd Font:size=13";
+static const char *fonts[]          = { "JetBrainsMono Nerd Font:size=13" };
+static const char dmenufont[]       = "JetBrainsMono Nerd Font:size=13";
 static const char col_gray1[]       = "#1C1917";
 static const char col_gray2[]       = "#2C363C";
 static const char col_gray3[]       = "#CFC1BA";
@@ -23,8 +23,8 @@ static const char *colors[][3]      = {
 static const unsigned int baralpha = 0xd0;
 static const unsigned int borderalpha = OPAQUE;
 static const unsigned int alphas[][3]      = {
-    /*               fg      bg        border*/
-    [SchemeNorm] = { OPAQUE, baralpha, borderalpha },
+	/*               fg      bg        border*/
+	[SchemeNorm] = { OPAQUE, baralpha, borderalpha },
 	[SchemeSel]  = { OPAQUE, baralpha, borderalpha },
 };
 
@@ -39,16 +39,10 @@ static const Rule rules[] = {
 	 *	WM_NAME(STRING) = title
 	 */
 	/* class            instance    title                   tags mask     isfloating   monitor */
-    /* { "st",             NULL,       NULL,                   1,            0,           -1 }, */
-    /* { NULL,             NULL,       "Alacritty",            1,            0,           -1 }, */
-    /* { "kitty",          NULL,       NULL,                   1,            0,           -1 }, */
-    /* { "firefox",        NULL,       NULL,                   1 << 1,       0,           -1 }, */
-    /* { NULL,             NULL,       "Thorium",              1 << 1,       0,           -1 }, */
-    { NULL,             NULL,       "nmtui",                0,            1,           -1 },
-    { NULL,             NULL,       "bluetuith",            0,            1,           -1 },
-    { NULL,             NULL,       "Screen Layout Editor", 0,            1,           -1 },
-    { NULL,             NULL,       "Volume Control",       0,            1,           -1 },
-    { NULL,             NULL,       "ColorPicker",          0,            1,           -1 },
+	{ NULL,             NULL,       "nmtui",                0,            1,           -1 },
+	{ NULL,             NULL,       "Screen Layout Editor", 0,            1,           -1 },
+	{ NULL,             NULL,       "Volume Control",       0,            1,           -1 },
+	{ NULL,             NULL,       "ColorPicker",          0,            1,           -1 },
 };
 
 /* layout(s) */

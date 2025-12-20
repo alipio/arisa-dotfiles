@@ -20,7 +20,7 @@ super + Escape
     slock
 
 super + shift + s
-    slock & systemctl suspend
+    slock systemctl suspend
 
 super + shift + d
     sysp
@@ -31,8 +31,8 @@ super + r
 super + n
     alacritty --title nmtui --command nmtui
 
-super + u
-    alacritty --title bluetuith --command bluetuith
+# super + u
+#     alacritty --title bluetuith --command bluetuith
 
 super + s
     arandr
@@ -40,7 +40,7 @@ super + s
 super + v
     pavucontrol
 
-super + o
+super + e
     thunar
 
 super + shift + p
@@ -59,13 +59,7 @@ super + shift + a
     dunstctl set-paused toggle ; pkill -RTMIN+12 dwmblocks
 
 super + w
-    thorium-browser
-
-super + e
-    pgrep screenkey || screenkey --show-settings
-
-super + shift + e
-    pkill screenkey
+    firefox
 
 super + shift + m
     power set ; pkill -RTMIN+16 dwmblocks

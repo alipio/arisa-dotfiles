@@ -16,7 +16,7 @@ BASE_DEPS=(
   xsel flameshot brightnessctl sxhkd redshift xdotool
   xorg-server xorg-xinit xorg-xprop xorg-xset xorg-xsetroot
   alacritty zsh zsh-syntax-highlighting diff-so-fancy helix
-  btop fzf ripgrep jq bat ncdu reflector openssh rsync
+  btop fzf ripgrep jq bat ncdu reflector pacman-contrib openssh rsync
   plocate moreutils acpi sysstat nsxiv mpv ffmpeg yt-dlp
   lxappearance firefox galculator zathura zathura-pdf-mupdf zathura-cb
   cantarell-fonts ttf-dejavu ttf-jetbrains-mono-nerd
@@ -115,9 +115,16 @@ install_suckless() {
   "$DOTFILES_ROOT"/suckless/install.sh
 }
 
-enable_services() {
-  log_info "Enabling essential services..."
-  sudo systemctl enable --now keyd.service
+install_bw_cli() {
+  if ! command -v bw >/dev/null; then
+    log_info "Installing Bitwarden CLI..."
+    pushd "$TEMP_DIR" >/dev/null
+    curl -fsL "https://bitwarden.com/download/?app=cli&platform=linux" -o bw.zip
+    unzip -q bw.zip
+    sudo install -m755 bw -t /usr/local/bin
+    rm bw
+    popd "$TEMP_DIR" >/dev/null
+  fi
 }
 
 create_user_dirs() {
@@ -132,33 +139,32 @@ deploy_configs() {
   # Sometimes there's a bashrc.
   rm -f ~/.bashrc
 
-  pushd $DOTFILES_ROOT >/dev/null
+  pushd "$DOTFILES_ROOT" >/dev/null
   git submodule -q sync --recursive
   git submodule -q update --init --recursive
-  stow --ignore "^(suckless|bootstrap)" dotfiles
+  stow home -t ~
   popd >/dev/null
   # keyd config
   sudo mkdir -p /etc/keyd
   sudo ln -sf ~/.config/keyd/default.conf /etc/keyd/default.conf
-  # X11 config
-  sudo ln -sf ~/.config/X11/10-monitor.conf /etc/X11/xorg.conf.d/10-monitor.conf
-  sudo ln -sf ~/.config/X11/30-touchpad.conf /etc/X11/xorg.conf.d/30-touchpad.conf
+  # Xorg config
+  sudo ln -sf ~/.config/xorg/10-monitor.conf /etc/X11/xorg.conf.d/10-monitor.conf
+  sudo ln -sf ~/.config/xorg/30-touchpad.conf /etc/X11/xorg.conf.d/30-touchpad.conf
 }
 
-install_bitwarden_cli() {
-  if ! command -v bw >/dev/null; then
-    log_info "Installing Bitwarden CLI..."
-    pushd "$TEMP_DIR" >/dev/null
-    curl -fsL "https://bitwarden.com/download/?app=cli&platform=linux" -o bw.zip
-    unzip -q bw.zip
-    sudo install -m755 bw -t /usr/local/bin
-    rm bw
-    popd "$TEMP_DIR" >/dev/null
-  fi
+enable_services() {
+  log_info "Enabling essential services..."
+  sudo systemctl enable --now keyd.service
+  sudo systemctl enable --now power-profiles-daemon
+  systemctl --user daemon-reload
+  systemctl --user enable --now checkup.timer || true
 }
 
 setup_github_ssh_key() {
-  [ ! -r ~/.bw.env ] && return 0
+  if [ ! -r ~/.bw.env ]; then
+    log_warn "No such file: '~/.bw.env'. Please remember to set up your SSH key later."
+    return 0
+  fi
   log_info "Setting up GitHub SSH key..."
   set -a
   . ~/.bw.env
@@ -207,10 +213,10 @@ main() {
   install_base_deps
   install_aur_deps
   install_suckless
-  enable_services
+  install_bw_cli
   create_user_dirs
   deploy_configs
-  install_bitwarden_cli
+  enable_services
   setup_github_ssh_key
   set_zsh_as_default_shell
 

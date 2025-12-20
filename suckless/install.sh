@@ -3,7 +3,6 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DEPS=(libx11 libxft libxinerama libxrandr libxext freetype2 fontconfig pam)
 
 if [ $EUID -ne 0 ]; then
   echo "This script should be run as root."
@@ -11,7 +10,8 @@ if [ $EUID -ne 0 ]; then
 fi
 
 echo "Installing dependencies for suckless programs..."
-pacman -S --needed --noconfirm "${DEPS[@]}" &>/dev/null
+pacman -S --needed --noconfirm libx11 libxft libxinerama libxrandr libxext \
+  freetype2 fontconfig pam &>/dev/null
 
 for prog in clipnotify clipmenu dmenu dwm dwmblocks slock; do
   pushd "$SCRIPT_DIR/$prog" >/dev/null

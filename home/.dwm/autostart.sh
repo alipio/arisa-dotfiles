@@ -14,4 +14,6 @@ else
     picom &
 fi
 dunst &
+redshift -l -23.5:-46.6 &
+unclutter &
 sh ~/.dwm/poststart.sh 2>/dev/null &

@@ -1,0 +1,11 @@
+#!/bin/sh
+
+pacman=$(checkupdates | wc -l)
+aur=$(yay -Qua | wc -l)
+total=$((pacman + aur))
+
+if [ "$total" -eq 0 ]; then
+  total=no
+fi
+
+notify-send -t 10000 "󰏔 Updates" "$total updates"
