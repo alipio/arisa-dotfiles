@@ -1,7 +1,7 @@
 #!/bin/bash
 # shellcheck disable=SC2034
 
-set -eu
+set -euo pipefail
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -13,12 +13,12 @@ TEMP_DIR=""
 DOTFILES_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PKGS=(
   base-devel git curl man-db less neovim stow libyaml
-  arandr autorandr picom libnotify dunst nitrogen unclutter
+  arandr autorandr picom libnotify dunst unclutter
   xsel flameshot brightnessctl sxhkd redshift xdotool
   xorg-server xorg-xinit xorg-xprop xorg-xset xorg-xsetroot
   alacritty zsh zsh-syntax-highlighting diff-so-fancy helix
   btop fzf ripgrep jq bat ncdu reflector pacman-contrib openssh rsync
-  plocate moreutils acpi sysstat nsxiv mpv ffmpeg yt-dlp
+  plocate moreutils acpi sysstat nsxiv mpv ffmpeg yt-dlp fastfetch
   lxappearance firefox galculator zathura zathura-pdf-mupdf zathura-cb
   cantarell-fonts ttf-dejavu ttf-jetbrains-mono-nerd
   noto-fonts noto-fonts-emoji noto-fonts-cjk noto-fonts-extra
@@ -90,7 +90,7 @@ update_system() {
 }
 
 install_deps() {
-  log_info "Installing required dependencies..."
+  log_info "Installing dependencies..."
   install_pkgs
   install_suckless
   install_bw_cli
@@ -103,12 +103,12 @@ install_pkgs() {
     exit 1
   }
   sudo pacman -S --needed --noconfirm "${PKGS[@]}"
-  yay -S --needed --noconfirm asdf-vm qt5-styleplugins
+  yay -S --needed --noconfirm asdf-vm nitrogen qt5-styleplugins
 }
 
 install_suckless() {
   log_info "Installing suckless programs..."
-  "$DOTFILES_ROOT"/suckless/install.sh
+  sudo "$DOTFILES_ROOT"/suckless/install.sh
 }
 
 install_bw_cli() {
@@ -119,13 +119,13 @@ install_bw_cli() {
   unzip -q bw.zip
   sudo install -m755 bw -t /usr/local/bin
   rm bw
-  popd "$TEMP_DIR" >/dev/null
+  popd >/dev/null
 }
 
 install_yay() {
-  command -v yay &> /dev/null && return 0
+  command -v yay >/dev/null && return 0
   log_info "Installing yay (AUR helper)..."
-  sudo pacman -S --needed --noconfirm base-devel git &>/dev/null
+  sudo pacman -S --needed --noconfirm base-devel git >/dev/null
   local yay_dir="$TEMP_DIR/yay"
   git clone -q --depth 1 https://aur.archlinux.org/yay-bin.git "$yay_dir"
   (cd "$yay_dir" && makepkg -si --noconfirm)
@@ -143,8 +143,10 @@ deploy_configs() {
   rm -f ~/.bashrc
 
   pushd "$DOTFILES_ROOT" >/dev/null
-  git submodule -q sync --recursive
-  git submodule -q update --init --recursive
+  if [ -f .gitmodules ]; then
+    git submodule -q sync --recursive
+    git submodule -q update --init --recursive
+  fi
   stow home -t ~
   popd >/dev/null
 
@@ -153,6 +155,7 @@ deploy_configs() {
   sudo ln -sf ~/.config/keyd/default.conf /etc/keyd/default.conf
 
   # Xorg config
+  sudo mkdir -p /etc/X11/xorg.conf.d
   sudo ln -sf ~/.config/xorg/10-monitor.conf /etc/X11/xorg.conf.d/10-monitor.conf
   sudo ln -sf ~/.config/xorg/30-touchpad.conf /etc/X11/xorg.conf.d/30-touchpad.conf
 }
@@ -177,7 +180,7 @@ setup_github_ssh_key() {
   bw login --apikey
   eval "$(bw unlock --passwordenv BW_PASSWORD)"
   mkdir -p ~/.ssh
-  bw get notes id_rsa_github > ~/.ssh/id_rsa
+  (umask 077; bw get notes id_rsa_github > ~/.ssh/id_rsa)
   ssh-keyscan -p 22 -H github.com gitlab.com > ~/.ssh/known_hosts
   chown -R "$USER":"$USER" ~/.ssh
   chmod 700 ~/.ssh
@@ -201,8 +204,8 @@ main() {
   create_temp_dir
 
   echo ""
-  log_warning "This script will install packages and modify system configuration."
-  log_warning "Make sure you have a stable internet connection."
+  log_warn "This script will install packages and modify system configuration."
+  log_warn "Make sure you have a stable internet connection."
   echo ""
   read -rp "Do you want to continue? (y/N): " -n 1
   echo ""
