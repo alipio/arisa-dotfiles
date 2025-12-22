@@ -1,4 +1,4 @@
-setlocal nowrap
 setlocal norelativenumber
+setlocal nowrap
 
 nnoremap <buffer><cr> <cr>
