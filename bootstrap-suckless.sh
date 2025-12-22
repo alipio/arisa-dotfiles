@@ -100,7 +100,7 @@ install_pkgs() {
   log_info "Installing required packages..."
   install_yay
   sudo pacman -S --needed --noconfirm "${PKGS[@]}"
-  yay -S --needed --noconfirm asdf-vm nitrogen qt5-styleplugins
+  yay -S --needed --noconfirm asdf-vm nitrogen gtk-engine-murrine qt5-styleplugins
 }
 
 install_suckless() {

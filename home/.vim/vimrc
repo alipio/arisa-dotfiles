@@ -113,7 +113,7 @@ set shiftwidth=2
 set foldlevelstart=99
 set foldmethod=indent
 set foldopen-=hor
-set foldtext=utils#MyFoldText()
+set foldtext=my#fold_text()
 set hlsearch
 set ignorecase
 set incsearch
@@ -235,8 +235,7 @@ let g:gruvbox_contrast_dark = 'soft'
 let g:gruvbox_italic = 0
 let g:gruvbox_sign_column = 'dark0_soft'
 set background=dark
-silent! colorscheme tokyonight-storm
-" silent! colorscheme gruvbox
+silent! colorscheme gruvbox
 
 " Mappings {{{1
 nnoremap s <nop>
@@ -277,11 +276,7 @@ nnoremap <down>  <c-w>+
 nmap <silent><expr><leader>a exists(':A') == 2 ? "\<Cmd>A<cr>" : ""
 
 " Copy the most recent yanked text to clipboard.
-if exists('$WAYLAND_DISPLAY')
-  nmap <silent><leader>y :call system('wl-copy', @0)<cr>
-else
-  nmap <silent><leader>y :call system('xclip -sel clip', @0)<cr>
-endif
+nmap <silent><leader>y :call system('xsel --clipboard --input', @0)<cr>
 
 " Save buffer.
 noremap <silent><leader>w :update!<cr>
@@ -292,9 +287,9 @@ noremap <silent><leader>ev :sp $MYVIMRC<cr>
 " Tags.
 nmap <C-]> g<C-]>
 
-nmap <silent><leader>cp :let @z=expand("%:.")<bar>call system('xclip -sel clip', @z)<cr>
-nmap <silent><leader>cf :let @z=expand("%:p")<bar>call system('xclip -sel clip', @z)<cr>
-nmap <silent><leader>cl :let @z=expand("%:.").":".line('.')<bar>call system('xclip -sel clip', @z)<cr>
+nmap <silent><leader>cp :let @z=expand("%:.")<bar>call system('xsel --clipboard --input', @z)<cr>
+nmap <silent><leader>cf :let @z=expand("%:p")<bar>call system('xsel --clipboard --input', @z)<cr>
+nmap <silent><leader>cl :let @z=expand("%:.").":".line('.')<bar>call system('xsel --clipboard --input', @z)<cr>
 
 " Sane regexps.
 nnoremap / /\v
@@ -524,12 +519,13 @@ function! s:CleanWhitespace()
 endfunction
 
 " Plugins {{{1
-let $FZF_DEFAULT_COMMAND = 'ag --silent --nocolor --follow -g "" --literal --hidden --ignore .git'
+" let $FZF_DEFAULT_COMMAND = 'ag --nocolor --follow -g "" --literal --hidden --ignore .git'
+let $FZF_DEFAULT_COMMAND = 'rg --files --color=never --hidden --follow --glob "!.git/*"'
 let g:fzf_preview_window = ['right:hidden', 'ctrl-/']
 nnoremap <leader>ff :Files<cr>
 nnoremap <leader>fb :Buffers<cr>
 nnoremap <leader>fl :BLines<cr>
-nnoremap <leader>fg :Ag<cr>
+nnoremap <leader>fg :Rg<cr>
 
 let g:NERDTreeQuitOnOpen = 1
 let g:NERDTreeIgnore = ['\~$', '^tags$']
@@ -605,17 +601,17 @@ let g:sayonara_confirm_quit = 0
 nnoremap <leader>g :Grepper<cr>
 nmap gs <plug>(GrepperOperator)
 xmap gs <plug>(GrepperOperator)
-nnoremap <leader>* :Grepper -tool ag -cword -noprompt<cr>
+nnoremap <leader>* :Grepper -tool rg -cword -noprompt<cr>
 
 let g:grepper = {}
-let g:grepper.tools = ['ag', 'git', 'grep']
+let g:grepper.tools = ['rg', 'git', 'grep']
 let g:grepper.jump = 1
 let g:grepper.switch = 0
 
 exe "command! Todo Grepper -noprompt -tool git -query -E '(TODO|FIX|FIXME|XXX|NOTE|HACK|OPTIMIZE):'"
 
 " vim-vsnip
-let g:vsnip_snippet_dir = expand('~/.vim/snip')
+let g:vsnip_snippet_dir = expand('~/.vim/snippets')
 let g:vsnip_filetypes = {}
 let g:vsnip_filetypes.ruby = ['rails']
 imap <expr><C-j> vsnip#available(1) ? "<Plug>(vsnip-expand-or-jump)" : "<C-j>"

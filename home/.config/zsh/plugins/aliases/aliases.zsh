@@ -24,15 +24,8 @@ alias lt='ll -t'
 alias gaa='git add -A'
 alias gco='git checkout'
 alias gcb='git checkout -b'
-
-gci() {
-  if (( $# > 0 )); then
-    git commit -m "$*"
-  else
-    git commit -v
-  fi
-}
-
+alias gcm='git commit -m'
+alias gci='git commit -v'
 alias gd='git diff'
 alias gdc='git diff --cached'
 alias gl='git pull'

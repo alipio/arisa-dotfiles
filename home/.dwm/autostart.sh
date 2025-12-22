@@ -1,18 +1,18 @@
 #!/bin/sh
 
-picom_version=$(picom --version)
+[ -f ~/.Xresources ] && xrdb -merge ~/.Xresources
 
-# gnome-keyring-daemon -r -d &
+# keyboard stuff
+xset r rate 200 60
+setxkbmap br
+[ -f ~/.Xmodmap ] && xmodmap ~/.Xmodmap
+
 /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
 autorandr --change --force && nitrogen --restore
 sxhkd &
 dwmblocks &
 clipmenud &
-if [ "$picom_version" = 'v9.1' ]; then
-    picom --experimental-backends &
-else
-    picom &
-fi
+picom &
 dunst &
 redshift -l -23.5:-46.6 &
 unclutter &
