@@ -1,7 +1,7 @@
 #!/bin/bash
 # shellcheck disable=SC2034
 
-set -euo pipefail
+set -e
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -85,7 +85,7 @@ configure_pacman() {
 
 update_system() {
   log_info "Updating system..."
-  sudo pacman -Syy --needed --noconfirm archlinux-keyring
+  sudo pacman -Syy --needed --noconfirm archlinux-keyring >/dev/null
   sudo pacman -Su --noconfirm
 }
 
@@ -98,10 +98,7 @@ install_deps() {
 
 install_pkgs() {
   log_info "Installing required packages..."
-  install_yay || {
-    log_error "yay installation failed"
-    exit 1
-  }
+  install_yay
   sudo pacman -S --needed --noconfirm "${PKGS[@]}"
   yay -S --needed --noconfirm asdf-vm nitrogen qt5-styleplugins
 }
@@ -114,12 +111,13 @@ install_suckless() {
 install_bw_cli() {
   command -v bw >/dev/null && return 0
   log_info "Installing Bitwarden CLI..."
-  pushd "$TEMP_DIR" >/dev/null
-  curl -Lfs "https://bitwarden.com/download/?app=cli&platform=linux" -o bw.zip
-  unzip -q bw.zip
-  sudo install -m755 bw -t /usr/local/bin
-  rm bw
-  popd >/dev/null
+  (
+    cd "$TEMP_DIR" || return 1
+    curl -Lfs "https://bitwarden.com/download/?app=cli&platform=linux" -o bw.zip
+    unzip -q bw.zip
+    sudo install -m755 bw -t /usr/local/bin
+    rm bw
+  )
 }
 
 install_yay() {
@@ -128,7 +126,7 @@ install_yay() {
   sudo pacman -S --needed --noconfirm base-devel git >/dev/null
   local yay_dir="$TEMP_DIR/yay"
   git clone -q --depth 1 https://aur.archlinux.org/yay-bin.git "$yay_dir"
-  (cd "$yay_dir" && makepkg -si --noconfirm)
+  (cd "$yay_dir" || return 1; makepkg -si --noconfirm)
   # Make sure *-git AUR packages get updated automatically.
   yay -Y --save --devel
 }
@@ -142,13 +140,14 @@ deploy_configs() {
   # Sometimes there's a bashrc.
   rm -f ~/.bashrc
 
-  pushd "$DOTFILES_ROOT" >/dev/null
-  if [ -f .gitmodules ]; then
-    git submodule -q sync --recursive
-    git submodule -q update --init --recursive
-  fi
-  stow home -t ~
-  popd >/dev/null
+  (
+    cd "$DOTFILES_ROOT" || return 1
+    if [ -f .gitmodules ]; then
+      git submodule -q sync --recursive
+      git submodule -q update --init --recursive
+    fi
+    stow home -t ~
+  )
 
   # keyd config
   sudo mkdir -p /etc/keyd
@@ -169,16 +168,9 @@ enable_services() {
 }
 
 setup_github_ssh_key() {
-  if [ ! -r ~/.bw.env ]; then
-    log_warn "No such file: '~/.bw.env'. Please remember to set up your SSH key later."
-    return 0
-  fi
   log_info "Setting up GitHub SSH key..."
-  set -a
-  . ~/.bw.env
-  set +a
-  bw login --apikey
-  eval "$(bw unlock --passwordenv BW_PASSWORD)"
+  BW_SESSION=$(bw login --raw)
+  export BW_SESSION
   mkdir -p ~/.ssh
   (umask 077; bw get notes id_rsa_github > ~/.ssh/id_rsa)
   ssh-keyscan -p 22 -H github.com gitlab.com > ~/.ssh/known_hosts
