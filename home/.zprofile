@@ -10,7 +10,7 @@ export BROWSER=firefox
 export PAGER=less
 export LESS=-Ri
 export LESSHISTFILE=-
-export LS_COLORS="no=00:fi=00:di=34:ln=01;31:pi=34;43:so=31;43:bd=30;43:cd=30;43:or=01;35:ex=31:su=30;41:ow=30;42:st=30;44:"
+export LS_COLORS="no=00:fi=00:di=34:ln=01;31:so=33:pi=33:ex=31:bd=36:cd=36:su=30;41:sg=30;43:tw=30;42:ow=30;46:or=01;35:"
 export FZF_DEFAULT_OPTS="--layout=reverse --height 40%"
 
 # Support colors in less
