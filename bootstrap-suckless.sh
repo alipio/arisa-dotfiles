@@ -173,11 +173,18 @@ enable_services() {
 
 setup_github_ssh_key() {
   log_info "Setting up GitHub SSH key..."
-  BW_SESSION=$(bw login --raw)
-  export BW_SESSION
+  if ! bw login --check 2>/dev/null; then
+    BW_SESSION=$(bw login --raw)
+    export BW_SESSION
+  fi
+  bw sync --force
   mkdir -p ~/.ssh
-  (umask 077; bw get notes id_rsa_github > ~/.ssh/id_rsa)
-  ssh-keyscan -p 22 -H github.com gitlab.com > ~/.ssh/known_hosts
+  (
+    umask 077
+    bw get notes id_rsa_github >~/.ssh/id_rsa
+    bw logout >/dev/null
+  )
+  ssh-keyscan -p 22 -H github.com gitlab.com >>~/.ssh/known_hosts
   chown -R "$USER":wheel ~/.ssh
   chmod 700 ~/.ssh
   chmod 600 ~/.ssh/*
