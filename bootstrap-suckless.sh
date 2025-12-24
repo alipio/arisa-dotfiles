@@ -137,8 +137,7 @@ deploy_configs() {
   mkdir -p ~/.{config,local} \
     ~/{screenshots,notes,Downloads,Documents,Music,Pictures,Videos}
 
-  # Sometimes there's a bashrc.
-  rm -f ~/.bashrc
+  rm -f ~/.bashrc ~/.bash_*
 
   (
     cd "$DOTFILES_ROOT" || return 1
