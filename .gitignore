@@ -1,0 +1,4 @@
+home/.dwm/log
+home/.config/systemd/user/*
+!home/.config/systemd/user/checkup.service
+!home/.config/systemd/user/checkup.timer
