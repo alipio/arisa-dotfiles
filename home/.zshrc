@@ -5,12 +5,12 @@
 zsh_load_plugins() {
   local plugin
   for plugin ($@); do
-    if [ -r "${ZDOTDIR:-$XDG_CONFIG_HOME/zsh}/plugins/$plugin/$plugin.zsh" ]; then
-      source "${ZDOTDIR:-$XDG_CONFIG_HOME/zsh}/plugins/$plugin/$plugin.zsh" 2>/dev/null
-    elif [ -r "${ZDOTDIR:-$XDG_CONFIG_HOME/zsh}/plugins/$plugin/$plugin.plugin.zsh" ]; then
-      source "${ZDOTDIR:-$XDG_CONFIG_HOME/zsh}/plugins/$plugin/$plugin.plugin.zsh" 2>/dev/null
-    elif [ -r "${ZDOTDIR:-$XDG_CONFIG_HOME/zsh}/plugins/$plugin/$plugin.zsh-theme" ]; then
-      source "${ZDOTDIR:-$XDG_CONFIG_HOME/zsh}/plugins/$plugin/$plugin.zsh-theme"  2>/dev/null
+    if [ -r "${ZDOTDIR:-$HOME/.config/zsh}/plugins/$plugin/$plugin.zsh" ]; then
+      source "${ZDOTDIR:-$HOME/.config/zsh}/plugins/$plugin/$plugin.zsh" 2>/dev/null
+    elif [ -r "${ZDOTDIR:-$HOME/.config/zsh}/plugins/$plugin/$plugin.plugin.zsh" ]; then
+      source "${ZDOTDIR:-$HOME/.config/zsh}/plugins/$plugin/$plugin.plugin.zsh" 2>/dev/null
+    elif [ -r "${ZDOTDIR:-$HOME/.config/zsh}/plugins/$plugin/$plugin.zsh-theme" ]; then
+      source "${ZDOTDIR:-$HOME/.config/zsh}/plugins/$plugin/$plugin.zsh-theme"  2>/dev/null
     else
       echo "$funcstack[1]: Unable to load '$plugin'." >&2
     fi
@@ -19,7 +19,7 @@ zsh_load_plugins() {
 
 zsh_update_plugins() {
   local plugin
-  for plugin (${ZDOTDIR:-$XDG_CONFIG_HOME/zsh}/plugins/*(N/)); do
+  for plugin (${ZDOTDIR:-$HOME/.config/zsh}/plugins/*(N/)); do
     git -C "$plugin" rev-parse --is-inside-work-tree >/dev/null 2>&1 || continue
     printf '%s: ' "$plugin:t"
     git -C "$plugin" remote -v | grep -q upstream && { git -C "$plugin" fetch upstream || printf '%s: Could not fetch upstream...\n' "$plugin:t" }
