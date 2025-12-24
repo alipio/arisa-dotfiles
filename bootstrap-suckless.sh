@@ -178,7 +178,7 @@ setup_github_ssh_key() {
   mkdir -p ~/.ssh
   (umask 077; bw get notes id_rsa_github > ~/.ssh/id_rsa)
   ssh-keyscan -p 22 -H github.com gitlab.com > ~/.ssh/known_hosts
-  chown -R "$USER":"$USER" ~/.ssh
+  chown -R "$USER":wheel ~/.ssh
   chmod 700 ~/.ssh
   chmod 600 ~/.ssh/*
 }

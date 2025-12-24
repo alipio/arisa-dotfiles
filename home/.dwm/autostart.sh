@@ -2,7 +2,7 @@
 
 [ -f ~/.Xresources ] && xrdb -merge ~/.Xresources
 
-# keyboard stuff
+# Keyboard stuff.
 xset r rate 200 60
 setxkbmap br
 [ -f ~/.Xmodmap ] && xmodmap ~/.Xmodmap
