@@ -1,3 +1,4 @@
+# vim: ft=zsh
 #
 # Extracts the contents of archives.
 #
@@ -105,5 +106,3 @@ while (( $# > 0 )); do
   (( $success == 0 )) && (( $remove_archive == 0 )) && rm "$1"
   shift
 done
-
-# vim: set ft=zsh:

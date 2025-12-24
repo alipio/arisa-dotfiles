@@ -608,7 +608,7 @@ let g:grepper.tools = ['rg', 'git', 'grep']
 let g:grepper.jump = 1
 let g:grepper.switch = 0
 
-exe "command! Todo Grepper -noprompt -tool git -query -E '(TODO|FIX|FIXME|XXX|NOTE|HACK|OPTIMIZE):'"
+exe "command! Todo Grepper -noprompt -tool rg -query '(TODO|FIX|FIXME|XXX|NOTE|HACK|OPTIMIZE):'"
 
 " vim-vsnip
 let g:vsnip_snippet_dir = expand('~/.vim/snippets')

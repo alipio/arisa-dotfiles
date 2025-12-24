@@ -149,14 +149,19 @@ deploy_configs() {
     stow home -t ~
   )
 
-  # keyd config
+  # keyd config.
   sudo mkdir -p /etc/keyd
   sudo ln -sf ~/.config/keyd/default.conf /etc/keyd/default.conf
 
-  # Xorg config
+  # Xorg config.
   sudo mkdir -p /etc/X11/xorg.conf.d
   sudo ln -sf ~/.config/xorg/10-monitor.conf /etc/X11/xorg.conf.d/10-monitor.conf
   sudo ln -sf ~/.config/xorg/30-touchpad.conf /etc/X11/xorg.conf.d/30-touchpad.conf
+}
+
+install_vim_plugins() {
+  log_info "Installing neovim plugins..."
+  nvim -c "PlugInstall|qa"
 }
 
 enable_services() {
@@ -211,6 +216,7 @@ main() {
   update_system
   install_deps
   deploy_configs
+  install_vim_plugins
   enable_services
   setup_github_ssh_key
   set_zsh_as_default_shell
