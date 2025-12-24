@@ -18,7 +18,7 @@ let g:polyglot_disabled = ['sensible', 'markdown', 'elixir']
 let g:plug_window = 'enew'
 
 call plug#begin('~/.local/share/vim/plugged')
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
 Plug 'scrooloose/nerdtree'
 
@@ -113,7 +113,7 @@ set shiftwidth=2
 set foldlevelstart=99
 set foldmethod=indent
 set foldopen-=hor
-set foldtext=my#fold_text()
+set foldtext=my#foldtext()
 set hlsearch
 set ignorecase
 set incsearch
@@ -505,7 +505,7 @@ function! s:Snip(from, to)
   let snippet = join(lines, "\n")
 
   call setreg('"', snippet, 'V')
-  call system('xclip -sel clip', snippet)
+  call system('xsel --clipboard --input', snippet)
 endfunction
 
 cabbrev snip Snip

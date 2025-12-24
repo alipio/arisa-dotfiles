@@ -1,5 +1,5 @@
 # Custom fold text.
-function! my#fold_text() abort
+function! my#foldtext() abort
   let l:line = getline(v:foldstart)
   let l:fold_line_num = v:foldend - v:foldstart
   let l:fold_text = substitute(l:line, '^"{\+', '', 'g')
