@@ -6,6 +6,7 @@ alias less='less -R'
 alias ..='cd ../'
 alias reload='exec $SHELL'
 alias cls=clear
+alias vim=nvim
 
 # Tell grep to highlight matches and avoid VCS folders
 alias grep='grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn}'
