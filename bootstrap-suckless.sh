@@ -203,9 +203,6 @@ set_zsh_as_default_shell() {
 main() {
   log_info "Starting Arch Linux suckless bootstrap..."
 
-  trap cleanup EXIT
-  trap error_handler ERR
-
   check_root
   check_arch
 
@@ -235,5 +232,8 @@ main() {
   log_info "Bootstrap completed successfully!"
   log_info "Please reboot or run 'startx' to start the desktop environment"
 }
+
+trap cleanup EXIT
+trap error_handler ERR
 
 main "$@"
