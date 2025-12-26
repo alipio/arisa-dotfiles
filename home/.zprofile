@@ -11,7 +11,7 @@ export PAGER=less
 export LESS=-Ri
 export LESSHISTFILE=-
 export LS_COLORS="no=00:fi=00:di=34:ln=01;31:so=33:pi=33:ex=31:bd=36:cd=36:su=30;41:sg=30;43:tw=30;42:ow=30;46:or=01;35:"
-export FZF_DEFAULT_OPTS="--height 40%"
+export FZF_DEFAULT_OPTS="--height 60%"
 
 # Support colors in less
 export LESS_TERMCAP_mb=$'\E[01;31m'
