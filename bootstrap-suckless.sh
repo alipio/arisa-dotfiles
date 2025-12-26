@@ -134,7 +134,7 @@ install_yay() {
 deploy_configs() {
   log_info "Deploying configs..."
 
-  mkdir -p ~/.{config,local} \
+  mkdir -p ~/.{config,local,ssh} \
     ~/{screenshots,notes,Downloads,Documents,Music,Pictures,Videos}
 
   rm -f ~/.bashrc ~/.bash_*
@@ -156,11 +156,15 @@ deploy_configs() {
   sudo mkdir -p /etc/X11/xorg.conf.d
   sudo ln -sf ~/.config/xorg/10-monitor.conf /etc/X11/xorg.conf.d/10-monitor.conf
   sudo ln -sf ~/.config/xorg/30-touchpad.conf /etc/X11/xorg.conf.d/30-touchpad.conf
+
+  # ssh config.
+  touch ~/.ssh/config
+  printf "Host *\n  AddKeysToAgent yes\n" >~/.ssh/config
 }
 
 install_vim_plugins() {
   log_info "Installing neovim plugins..."
-  nvim -c "PlugInstall|qa"
+  nvim --headless -c "PlugInstall|qa"
 }
 
 enable_services() {
@@ -181,10 +185,11 @@ setup_github_ssh_key() {
   mkdir -p ~/.ssh
   (
     umask 077
-    bw get notes id_rsa_github >~/.ssh/id_rsa
+    bw get item github_ssh | jq -r .sshKey.privateKey >~/.ssh/id_ed25519
+    bw get item github_ssh | jq -r .sshKey.publicKey >~/.ssh/id_ed25519.pub
     bw logout >/dev/null
   )
-  ssh-keyscan -p 22 -H github.com gitlab.com >>~/.ssh/known_hosts
+  ssh-keyscan -H github.com gitlab.com >>~/.ssh/known_hosts
   chown -R "$USER":wheel ~/.ssh
   chmod 700 ~/.ssh
   chmod 600 ~/.ssh/*
