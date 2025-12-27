@@ -1,8 +1,6 @@
 #!/bin/bash
 # shellcheck disable=SC2034
 
-set -e
-
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -67,7 +65,7 @@ check_non_root() {
   fi
 }
 
-check_arch() {
+check_arch_distro() {
   if [[ ! -f /etc/arch-release ]]; then
     log_error "This script is intended for Arch Linux only."
     exit 1
@@ -204,7 +202,7 @@ main() {
   log_info "Starting Arch Linux suckless bootstrap..."
 
   check_non_root
-  check_arch
+  check_arch_distro
 
   create_temp_dir
 
@@ -235,5 +233,7 @@ main() {
 
 trap cleanup EXIT
 trap error_handler ERR
+
+set -e
 
 main "$@"
