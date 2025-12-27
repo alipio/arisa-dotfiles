@@ -55,21 +55,21 @@ error_handler() {
 
 create_temp_dir() {
   if ! TEMP_DIR=$(mktemp -d -t arch-bootstrap-XXXXXX); then
-    log_error "Could not create temporary directory"
+    log_error "Could not create temporary directory."
     exit 1
   fi
 }
 
-check_root() {
+check_non_root() {
   if [[ $EUID -eq 0 ]]; then
-    log_error "This script should not be run as root"
+    log_error "This script must not be run as root."
     exit 1
   fi
 }
 
 check_arch() {
   if [[ ! -f /etc/arch-release ]]; then
-    log_error "This script is intended for Arch Linux only"
+    log_error "This script is intended for Arch Linux only."
     exit 1
   fi
 }
@@ -203,7 +203,7 @@ set_zsh_as_default_shell() {
 main() {
   log_info "Starting Arch Linux suckless bootstrap..."
 
-  check_root
+  check_non_root
   check_arch
 
   create_temp_dir
