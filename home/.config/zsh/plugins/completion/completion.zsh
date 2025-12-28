@@ -1,13 +1,13 @@
-unsetopt menu_complete   # do not autoselect the first completion entry
-setopt auto_menu         # show completion menu on succesive tab press
-setopt complete_in_word
-setopt always_to_end
+setopt always_to_end     # Move cursor to the end of a completed word.
+setopt auto_menu         # Show completion menu on succesive tab press.
+setopt complete_in_word  # Complete from both ends of a word.
+setopt no_menu_complete  # Do not autoselect the first completion entry.
 
 WORDCHARS=''
 
 zmodload -i zsh/complist
 
-## case-insensitive (all),partial-word and then substring completion
+# case-insensitive (all),partial-word and then substring completion.
 if [ "x$CASE_SENSITIVE" = "xtrue" ]; then
   zstyle ':completion:*' matcher-list 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
   unset CASE_SENSITIVE
@@ -15,7 +15,7 @@ else
   zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
 fi
 
-zstyle ':completion:*' list-colors '${(s.:.)LS_COLORS}'
+zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 
 # should this be in keybindings?
 # bindkey -M menuselect '^o' accept-and-infer-next-history
@@ -24,13 +24,13 @@ zstyle ':completion:*:*:*:*:*' menu select
 zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#) ([0-9a-z-]#)*=01;34=0=01'
 zstyle ':completion:*:*:*:*:processes' command "ps -u $LOGNAME -o pid,user,comm -w -w"
 
-# disable named-directories autocompletion
+# disable named-directories autocompletion.
 zstyle ':completion:*:*:cd:*' tag-order local-directories directory-stack path-directories
 
-# Use caching so that commands like apt and dpkg complete are useable
+# Use caching so that commands like apt and dpkg complete are useable.
 zstyle ':completion::complete:*' use-cache 1
 zstyle ':completion::complete:*' cache-path ~/.cache/zsh/zcompcache
-# Don't complete uninteresting users
+# Don't complete uninteresting users.
 zstyle ':completion:*:*:*:users' ignored-patterns \
         adm amanda apache avahi beaglidx bin cacti canna clamav daemon \
         dbus distcache dovecot fax ftp games gdm gkrellmd gopher \
