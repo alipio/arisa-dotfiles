@@ -1,0 +1,5 @@
+--embed-metadata
+--force-ipv4
+--cookies-from-browser firefox
+
+-o ~/Videos/YouTube/%(title)s.%(ext)s
