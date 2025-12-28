@@ -4,7 +4,7 @@
 
 # Keyboard stuff.
 xset r rate 200 60
-setxkbmap br
+xkbcomp -w 0 ~/.config/xkb/personal $DISPLAY
 [ -f ~/.Xmodmap ] && xmodmap ~/.Xmodmap
 
 /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &

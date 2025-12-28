@@ -1,24 +1,12 @@
 [general]
-import = ["~/.config/alacritty/themes/gruvbox_dark.toml"]
+import = ["~/.config/alacritty/gruvbox_dark.toml"]
 
 [font]
-size = 13
-
-[font.bold]
-family = "JetBrainsMono Nerd Font"
-style = "Bold"
-
-[font.italic]
-family = "JetBrainsMono Nerd Font"
-style = "Italic"
-
-[font.normal]
-family = "JetBrainsMono Nerd Font"
-style = "Regular"
-
-[font.offset]
-x = 0
-y = 2
+normal = { family = "JetBrainsMono Nerd Font", style = "Regular" }
+bold = { family = "JetBrainsMono Nerd Font", style = "Bold" }
+italic = { family = "JetBrainsMono Nerd Font", style = "Italic" }
+offset = { x = 0, y = 2 }
+size = 12.0
 
 [[hints.enabled]]
 action = "Copy"
@@ -40,6 +28,6 @@ mods = "Control|Shift"
 [selection]
 save_to_clipboard = true
 
-[window.padding]
-x = 4
-y = 4
+[window]
+dynamic_padding = true
+padding = { x = 0, y = 0 }

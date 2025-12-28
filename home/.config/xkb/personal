@@ -1,0 +1,48 @@
+// vim: ft=xkb
+
+xkb_keymap {
+    xkb_keycodes  { include "evdev+aliases(qwerty)" };
+    xkb_types     { include "complete" };
+    xkb_compat    { include "complete" };
+    xkb_geometry  { include "pc(pc105)" };
+
+    xkb_symbols "personal" {
+        include "pc+br+inet(evdev)"
+
+        // Second row.
+        key <AD01> { [ q, Q, quotedbl ] };
+        key <AD02> { [ w, W, underscore ] };
+        key <AD03> { [ e, E, bracketleft ] };
+        key <AD04> { [ r, R, bracketright ] };
+        key <AD05> { [ t, T, asciicircum ] };
+        key <AD06> { [ y, Y, exclam ] };
+        key <AD07> { [ u, U, less ] };
+        key <AD08> { [ i, I, greater ] };
+        key <AD09> { [ o, O, equal ] };
+        key <AD10> { [ p, P, ampersand ] };
+
+        // Home row.
+        key <AC01> { [ a, A, slash ] };
+        key <AC02> { [ s, S, minus ] };
+        key <AC03> { [ d, D, braceleft ] };
+        key <AC04> { [ f, F, braceright ] };
+        key <AC05> { [ g, G, asterisk ] };
+        key <AC06> { [ h, H, question ] };
+        key <AC07> { [ j, J, parenleft ] };
+        key <AC08> { [ k, K, parenright ] };
+        key <AC09> { [ l, L, apostrophe ] };
+
+        // Bottom row
+        key <AB01> { [ z,      Z,       numbersign ] };
+        key <AB02> { [ x,      X,       dollar ] };
+        key <AB03> { [ c,      C,       bar ] };
+        key <AB04> { [ v,      V,       asciitilde ] };
+        key <AB05> { [ b,      B,       grave ] };
+        key <AB06> { [ n,      N,       plus ] };
+        key <AB07> { [ m,      M,       percent ] };
+        key <AB08> { [ comma,  less,    backslash ] };
+        key <AB09> { [ period, greater, at ] };
+        // Unshifted colon.
+        key <AB10> { [ colon,  semicolon ] };
+    };
+};
