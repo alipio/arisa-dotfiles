@@ -5,4 +5,3 @@ Description=Check for updates in official repos and AUR
 Type=oneshot
 ExecStart=%h/bin/checkup
 Environment=DISPLAY=:0
-TimeoutStopSec=10
