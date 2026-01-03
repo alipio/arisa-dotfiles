@@ -143,7 +143,7 @@ deploy_configs() {
       git submodule -q sync --recursive
       git submodule -q update --init --recursive
     fi
-    stow home -t ~
+    stow -R home -t ~
   )
 
   # keyd config.
