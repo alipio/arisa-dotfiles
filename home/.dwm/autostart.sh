@@ -8,7 +8,7 @@ xkbcomp -w 0 ~/.config/xkb/personal $DISPLAY
 [ -f ~/.Xmodmap ] && xmodmap ~/.Xmodmap
 
 /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
-autorandr --change --force && nitrogen --restore
+autorandr --change --skip-options gamma && nitrogen --restore
 sxhkd &
 dwmblocks &
 clipmenud &

@@ -1,5 +1,5 @@
 [Unit]
-Description=Run update check periodically and on boot
+Description=Run update check periodically and on boot.
 
 [Timer]
 OnBootSec=15min

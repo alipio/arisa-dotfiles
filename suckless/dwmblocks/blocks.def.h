@@ -14,7 +14,6 @@ static const Block blocks[] = {
     {"", "wifi_perc_block", 5, 0},
     {"", "battery_block", 5, 0},
     {"", "power get", 0, 16},
-    {"", "keemap icon", 0, 18},
 
     {"", "", 0, 0},
 

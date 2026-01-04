@@ -1,5 +1,5 @@
 [Unit]
-Description=Check for updates in official repos and AUR
+Description=Check for updates in official repos and AUR.
 
 [Service]
 Type=oneshot

@@ -8,23 +8,16 @@ export VISUAL=$EDITOR
 export TERMINAL=alacritty
 export BROWSER=firefox
 export PAGER=less
-export LESS=-Ri
-export LESSHISTFILE=-
-export LS_COLORS="no=00:fi=00:di=34:ln=01;31:so=33:pi=33:ex=31:bd=36:cd=36:su=30;41:sg=30;43:tw=30;42:ow=30;46:or=01;35:"
+export MANPAGER="less --use-color -Dd+r -Du+b"
+
 export FZF_DEFAULT_OPTS="--height 60%"
-
-# Support colors in less
-export LESS_TERMCAP_mb=$'\E[01;31m'
-export LESS_TERMCAP_md=$'\E[01;31m'
-export LESS_TERMCAP_me=$'\E[0m'
-export LESS_TERMCAP_se=$'\E[0m'
-export LESS_TERMCAP_so=$'\E[01;44;33m'
-export LESS_TERMCAP_ue=$'\E[0m'
-export LESS_TERMCAP_us=$'\E[01;32m'
-
-export QT_QPA_PLATFORMTHEME=gtk2
-export _JAVA_AWT_WM_NONREPARENTING=1 # Fix for Java applications in dwm
+export LESSHISTFILE=-
+export LESS=Ri
+export LS_COLORS="no=00:fi=00:di=34:ln=01;31:so=33:pi=33:ex=31:bd=36:cd=36:su=30;41:sg=30;43:tw=30;42:ow=30;46:or=01;35:"
+export MANROFFOPT=-c
 export BAT_THEME=ansi
+export QT_QPA_PLATFORMTHEME=gtk2
+export _JAVA_AWT_WM_NONREPARENTING=1 # Fix for Java applications in dwm.
 export XDG_CURRENT_DESKTOP=dwm
 
 if [ -z "$DISPLAY" ] && [ "$(tty)" = /dev/tty1 ]; then
