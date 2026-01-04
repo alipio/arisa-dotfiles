@@ -1,17 +1,17 @@
-From b46028b2797b886154258dcafe71c349cdc68b43 Mon Sep 17 00:00:00 2001
-From: Blair Drummond <blair.robert.drummond@gmail.com>
-Date: Wed, 2 Oct 2019 14:59:00 -0400
-Subject: [PATCH] Add a message command. Fixes old version's bugs.
+From ae681c5a52a2b4b257f9432204deedc8b5570e8d Mon Sep 17 00:00:00 2001
+From: Nathaniel Evan <nathanielevan@zohomail.com>
+Date: Mon, 15 Mar 2021 05:50:20 +0700
+Subject: [PATCH] Updates message patch with Xft font support
 
 ---
- config.def.h |   9 ++++
- config.mk    |   2 +-
- slock.1      |   7 +++
- slock.c      | 120 +++++++++++++++++++++++++++++++++++++++++++++++++--
- 4 files changed, 133 insertions(+), 5 deletions(-)
+ config.def.h |   9 +++++
+ config.mk    |   4 +-
+ slock.1      |   4 ++
+ slock.c      | 110 +++++++++++++++++++++++++++++++++++++++++++++++++--
+ 4 files changed, 122 insertions(+), 5 deletions(-)
 
 diff --git a/config.def.h b/config.def.h
-index 9855e21..c2a0ab2 100644
+index 9855e21..2c83077 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -10,3 +10,12 @@ static const char *colorname[NUMCOLS] = {
@@ -26,39 +26,38 @@ index 9855e21..c2a0ab2 100644
 +static const char * text_color = "#ffffff";
 +
 +/* text size (must be a valid size) */
-+static const char * font_name = "6x10";
++static const char * font_name = "sans-serif:size:pixelsize=24:antialias=true:autohint=true";
 diff --git a/config.mk b/config.mk
-index 74429ae..c4ccf66 100644
+index 74429ae..69ef27a 100644
 --- a/config.mk
 +++ b/config.mk
-@@ -12,7 +12,7 @@ X11LIB = /usr/X11R6/lib
+@@ -11,8 +11,8 @@ X11INC = /usr/X11R6/include
+ X11LIB = /usr/X11R6/lib
  
  # includes and libs
- INCS = -I. -I/usr/include -I${X11INC}
+-INCS = -I. -I/usr/include -I${X11INC}
 -LIBS = -L/usr/lib -lc -lcrypt -L${X11LIB} -lX11 -lXext -lXrandr
-+LIBS = -L/usr/lib -lc -lcrypt -L${X11LIB} -lX11 -lXext -lXrandr -lXinerama
++INCS = -I. -I/usr/include -I${X11INC} -I/usr/include/freetype2
++LIBS = -L/usr/lib -lc -lcrypt -L${X11LIB} -lX11 -lXext -lXrandr -lXinerama -lXft
  
  # flags
  CPPFLAGS = -DVERSION=\"${VERSION}\" -D_DEFAULT_SOURCE -DHAVE_SHADOW_H
 diff --git a/slock.1 b/slock.1
-index 82cdcd6..946165f 100644
+index 82cdcd6..541a264 100644
 --- a/slock.1
 +++ b/slock.1
-@@ -6,6 +6,8 @@
+@@ -6,6 +6,7 @@
  .Sh SYNOPSIS
  .Nm
  .Op Fl v
-+.Op Fl f
 +.Op Fl m Ar message
  .Op Ar cmd Op Ar arg ...
  .Sh DESCRIPTION
  .Nm
-@@ -16,6 +18,11 @@ is executed after the screen has been locked.
+@@ -16,6 +17,9 @@ is executed after the screen has been locked.
  .Bl -tag -width Ds
  .It Fl v
  Print version information to stdout and exit.
-+.It Fl f
-+List all valid X fonts and exit.
 +.It Fl m Ar message
 +Overrides default slock lock message.
 +.TP
@@ -66,18 +65,23 @@ index 82cdcd6..946165f 100644
  .Sh SECURITY CONSIDERATIONS
  To make sure a locked screen can not be bypassed by switching VTs
 diff --git a/slock.c b/slock.c
-index 5ae738c..610929b 100644
+index 5ae738c..ef569f8 100644
 --- a/slock.c
 +++ b/slock.c
-@@ -15,6 +15,7 @@
+@@ -14,16 +14,22 @@
+ #include <string.h>
  #include <unistd.h>
  #include <sys/types.h>
++#include <fontconfig/fontconfig.h>
  #include <X11/extensions/Xrandr.h>
 +#include <X11/extensions/Xinerama.h>
  #include <X11/keysym.h>
  #include <X11/Xlib.h>
  #include <X11/Xutil.h>
-@@ -24,6 +25,9 @@
++#include <X11/Xft/Xft.h>
+ 
+ #include "arg.h"
+ #include "util.h"
  
  char *argv0;
  
@@ -87,7 +91,7 @@ index 5ae738c..610929b 100644
  enum {
  	INIT,
  	INPUT,
-@@ -83,6 +87,98 @@ dontkillme(void)
+@@ -83,6 +89,98 @@ dontkillme(void)
  }
  #endif
  
@@ -95,30 +99,25 @@ index 5ae738c..610929b 100644
 +writemessage(Display *dpy, Window win, int screen)
 +{
 +	int len, line_len, width, height, s_width, s_height, i, j, k, tab_replace, tab_size;
-+	XGCValues gr_values;
-+	XFontStruct *fontinfo;
-+	XColor color, dummy;
++	XftFont *fontinfo;
++	XftColor xftcolor;
++	XftDraw *xftdraw;
++	XGlyphInfo ext_msg, ext_space;
 +	XineramaScreenInfo *xsi;
-+	GC gc;
-+	fontinfo = XLoadQueryFont(dpy, font_name);
++	xftdraw = XftDrawCreate(dpy, win, DefaultVisual(dpy, screen), DefaultColormap(dpy, screen));
++	fontinfo = XftFontOpenName(dpy, screen, font_name);
++	XftColorAllocName(dpy, DefaultVisual(dpy, screen), DefaultColormap(dpy, screen), text_color, &xftcolor);
 +
 +	if (fontinfo == NULL) {
 +		if (count_error == 0) {
 +			fprintf(stderr, "slock: Unable to load font \"%s\"\n", font_name);
-+			fprintf(stderr, "slock: Try listing fonts with 'slock -f'\n");
 +			count_error++;
 +		}
 +		return;
 +	}
 +
-+	tab_size = 8 * XTextWidth(fontinfo, " ", 1);
-+
-+	XAllocNamedColor(dpy, DefaultColormap(dpy, screen),
-+		 text_color, &color, &dummy);
-+
-+	gr_values.font = fontinfo->fid;
-+	gr_values.foreground = color.pixel;
-+	gc=XCreateGC(dpy,win,GCFont+GCForeground, &gr_values);
++	XftTextExtentsUtf8(dpy, fontinfo, (XftChar8 *) " ", 1, &ext_space);
++	tab_size = 8 * ext_space.width;
 +
 +	/*  To prevent "Uninitialized" warnings. */
 +	xsi = NULL;
@@ -154,8 +153,9 @@ index 5ae738c..610929b 100644
 +		s_height = DisplayHeight(dpy, screen);
 +	}
 +
++	XftTextExtentsUtf8(dpy, fontinfo, (XftChar8 *)message, line_len, &ext_msg);
 +	height = s_height*3/7 - (k*20)/3;
-+	width  = (s_width - XTextWidth(fontinfo, message, line_len))/2;
++	width  = (s_width - ext_msg.width)/2;
 +
 +	/* Look for '\n' and print the text between them. */
 +	for (i = j = k = 0; i <= len; i++) {
@@ -167,7 +167,7 @@ index 5ae738c..610929b 100644
 +				j++;
 +			}
 +
-+			XDrawString(dpy, win, gc, width + tab_size*tab_replace, height + 20*k, message + j, i - j);
++			XftDrawStringUtf8(xftdraw, &xftcolor, fontinfo, width + tab_size*tab_replace, height + 20*k, (XftChar8 *)(message + j), i - j);
 +			while (i < len && message[i] == '\n') {
 +				i++;
 +				j = i;
@@ -179,6 +179,10 @@ index 5ae738c..610929b 100644
 +	/* xsi should not be NULL anyway if Xinerama is active, but to be safe */
 +	if (XineramaIsActive(dpy) && xsi != NULL)
 +			XFree(xsi);
++
++	XftFontClose(dpy, fontinfo);
++	XftColorFree(dpy, DefaultVisual(dpy, screen), DefaultColormap(dpy, screen), &xftcolor);
++	XftDrawDestroy(xftdraw);
 +}
 +
 +
@@ -186,7 +190,7 @@ index 5ae738c..610929b 100644
  static const char *
  gethash(void)
  {
-@@ -194,6 +290,7 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
+@@ -194,6 +292,7 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
  					                     locks[screen]->win,
  					                     locks[screen]->colors[color]);
  					XClearWindow(dpy, locks[screen]->win);
@@ -194,43 +198,26 @@ index 5ae738c..610929b 100644
  				}
  				oldc = color;
  			}
-@@ -300,7 +397,7 @@ lockscreen(Display *dpy, struct xrandr *rr, int screen)
+@@ -300,7 +399,7 @@ lockscreen(Display *dpy, struct xrandr *rr, int screen)
  static void
  usage(void)
  {
 -	die("usage: slock [-v] [cmd [arg ...]]\n");
-+	die("usage: slock [-v] [-f] [-m message] [cmd [arg ...]]\n");
++	die("usage: slock [-v] [-m message] [cmd [arg ...]]\n");
  }
  
  int
-@@ -313,12 +410,25 @@ main(int argc, char **argv) {
- 	gid_t dgid;
- 	const char *hash;
- 	Display *dpy;
--	int s, nlocks, nscreens;
-+	int i, s, nlocks, nscreens;
-+	int count_fonts;
-+	char **font_names;
- 
- 	ARGBEGIN {
+@@ -319,6 +418,9 @@ main(int argc, char **argv) {
  	case 'v':
  		fprintf(stderr, "slock-"VERSION"\n");
  		return 0;
 +	case 'm':
 +		message = EARGF(usage());
 +		break;
-+	case 'f':
-+		if (!(dpy = XOpenDisplay(NULL)))
-+			die("slock: cannot open display\n");
-+		font_names = XListFonts(dpy, "*", 10000 /* list 10000 fonts*/, &count_fonts);
-+		for (i=0; i<count_fonts; i++) {
-+			fprintf(stderr, "%s\n", *(font_names+i));
-+		}
-+		return 0;
  	default:
  		usage();
  	} ARGEND
-@@ -363,10 +473,12 @@ main(int argc, char **argv) {
+@@ -363,10 +465,12 @@ main(int argc, char **argv) {
  	if (!(locks = calloc(nscreens, sizeof(struct lock *))))
  		die("slock: out of memory\n");
  	for (nlocks = 0, s = 0; s < nscreens; s++) {
@@ -246,5 +233,5 @@ index 5ae738c..610929b 100644
  	XSync(dpy, 0);
  
 -- 
-2.20.1
+2.30.1
 

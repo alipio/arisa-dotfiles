@@ -18,4 +18,4 @@ static const char * message = "Suckless: Software that sucks less.";
 static const char * text_color = "#ffffff";
 
 /* text size (must be a valid size) */
-static const char * font_name = "-*-fixed-medium-r-s*--13-120-*-*-c-*-iso8859-1";
+static const char * font_name = "monospace:size=16";
