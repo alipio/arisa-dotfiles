@@ -5,29 +5,28 @@ import = ["~/.config/alacritty/gruvbox_dark.toml"]
 normal = { family = "JetBrainsMono Nerd Font", style = "Regular" }
 bold = { family = "JetBrainsMono Nerd Font", style = "Bold" }
 italic = { family = "JetBrainsMono Nerd Font", style = "Italic" }
-offset = { x = 0, y = 2 }
 size = 12.0
+offset = { x = 0, y = 2 }
 
 [[hints.enabled]]
+regex = "[a-f0-9]{40}|[a-f0-9]{7}"
 action = "Copy"
 mouse.enabled = true
-regex = "[a-f0-9]{40}|[a-f0-9]{7}"
 
 [[keyboard.bindings]]
+key = "K"
+mods = "Control|Shift"
 action = "ScrollLineUp"
-key = "ArrowUp"
 mode = "~Alt"
-mods = "Control|Shift"
 
 [[keyboard.bindings]]
-action = "ScrollLineDown"
-key = "ArrowDown"
-mode = "~Alt"
+key = "J"
 mods = "Control|Shift"
+action = "ScrollLineDown"
+mode = "~Alt"
 
 [selection]
 save_to_clipboard = true
 
 [window]
 dynamic_padding = true
-padding = { x = 0, y = 0 }
