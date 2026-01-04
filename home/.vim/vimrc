@@ -17,7 +17,7 @@ let g:polyglot_disabled = ['sensible', 'markdown', 'elixir']
 " Plug {{{1
 let g:plug_window = 'enew'
 
-call plug#begin('~/.local/share/vim/plugged')
+call plug#begin(s:data_home . '/plugged')
 Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
 Plug 'scrooloose/nerdtree'
