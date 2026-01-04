@@ -86,7 +86,7 @@ end
 
 function seek_to()
     copy_history_to_last()
-    mp.commandv("osd-bar", "seek", current_time_as_sec(history[history_position]), "absolute")
+    mp.commandv("seek", current_time_as_sec(history[history_position]), "absolute")
     --deduplicate consecutive timestamps
     if #history == 1 or not time_equal(history[history_position], history[#history - 1]) then
         history[#history + 1] = {}
@@ -183,7 +183,7 @@ function get_clipboard()
         if os.getenv("WAYLAND_DISPLAY") then
             res = subprocess({ "wl-paste", "-n" })
         else
-            res = subprocess({ "xclip", "-selection", "clipboard", "-out" })
+            res = subprocess({ "xsel", "--clipboard", "--output" })
         end
     end
     return res
@@ -196,7 +196,7 @@ function paste_timestamp()
     timestamp = clipboard:match("%d*:?%d+:[0-5][0-9]%.?%d*")
     if timestamp ~= nil then
         mp.osd_message("Timestamp pasted: " .. timestamp)
-        mp.commandv("osd-bar", "seek", timestamp, "absolute")
+        mp.commandv("seek", timestamp, "absolute")
     else
         msg.warn("No pastable timestamp found!")
     end

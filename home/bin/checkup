@@ -11,4 +11,4 @@ total=$((ups + aur_ups))
 
 [ "$total" -eq 0 ] && exit 0
 
-notify-send -t 10000 "󰏔 Package Updates" "$total package(s) can be updated."
+notify-send -t 10000 "󰏔 Package Updates" "$total package(s) to update."
