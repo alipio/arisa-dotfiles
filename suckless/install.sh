@@ -11,13 +11,13 @@ fi
 
 # Install required dependencies for suckless programs.
 pacman -S --needed --noconfirm libx11 libxft libxinerama libxrandr libxext \
-  freetype2 fontconfig pam >/dev/null
+  freetype2 fontconfig >/dev/null
 
 for prog in clipnotify clipmenu dmenu dwm dwmblocks slock; do
   pushd "$SCRIPT_DIR/$prog" >/dev/null
   printf "Installing %s...\n" "$prog"
   rm -f config.h
-  make clean install
+  make clean install >/dev/null
   popd >/dev/null
 done
 unset prog

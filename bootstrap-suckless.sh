@@ -8,7 +8,6 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 TEMP_DIR=""
-DOTFILES_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PKGS=(
   base-devel git curl man-db less neovim stow libyaml
   arandr autorandr picom libnotify dunst unclutter
@@ -26,6 +25,7 @@ PKGS=(
   thunar-archive-plugin xarchiver 7zip unrar unzip xdg-utils zip
   thunar-volman gvfs gvfs-mtp udisks2
 )
+AUR_PKGS=(asdf-vm nitrogen gtk-engine-murrine qt5-styleplugins)
 
 log_info() {
   printf "==> %s\n" "$@"
@@ -40,9 +40,7 @@ log_error() {
 }
 
 cleanup() {
-  if [[ -n "$TEMP_DIR" && -d "$TEMP_DIR" ]]; then
-    rm -rf "$TEMP_DIR"
-  fi
+  rm -rf "$TEMP_DIR"
 }
 
 error_handler() {
@@ -84,11 +82,11 @@ configure_pacman() {
 update_system() {
   log_info "Updating system..."
   sudo pacman -Syy --needed --noconfirm archlinux-keyring >/dev/null
-  sudo pacman -Su --noconfirm
+  sudo pacman -Su --noconfirm >/dev/null
 }
 
 install_deps() {
-  log_info "Installing dependencies..."
+  log_info "Installing core dependencies. Please be patient, this could take a while..."
   install_pkgs
   install_suckless
   install_bw_cli
@@ -97,25 +95,23 @@ install_deps() {
 install_pkgs() {
   log_info "Installing required packages..."
   install_yay
-  sudo pacman -S --needed --noconfirm "${PKGS[@]}"
-  yay -S --needed --noconfirm asdf-vm nitrogen gtk-engine-murrine qt5-styleplugins
+  sudo pacman -S --needed --noconfirm "${PKGS[@]}" >/dev/null
+  yay -S --needed --noconfirm "${AUR_PKGS[@]}" >/dev/null
 }
 
 install_suckless() {
   log_info "Installing suckless programs..."
-  sudo "$DOTFILES_ROOT"/suckless/install.sh
+  sudo suckless/install.sh
 }
 
 install_bw_cli() {
   command -v bw >/dev/null && return 0
   log_info "Installing Bitwarden CLI..."
-  (
-    cd "$TEMP_DIR" || return 1
-    curl -Lfs "https://bitwarden.com/download/?app=cli&platform=linux" -o bw.zip
-    unzip -q bw.zip
-    sudo install -m755 bw -t /usr/local/bin
-    rm bw
-  )
+  pushd "$TEMP_DIR" >/dev/null || return 1
+  curl -Lsf "https://bitwarden.com/download/?app=cli&platform=linux" -o bw.zip
+  unzip -q bw.zip
+  sudo install -m755 bw -t /usr/local/bin
+  popd >/dev/null || return 1
 }
 
 install_yay() {
@@ -124,7 +120,7 @@ install_yay() {
   sudo pacman -S --needed --noconfirm base-devel git >/dev/null
   local yay_dir="$TEMP_DIR/yay"
   git clone -q --depth 1 https://aur.archlinux.org/yay-bin.git "$yay_dir"
-  (cd "$yay_dir" || return 1; makepkg -si --noconfirm)
+  (cd "$yay_dir" || exit 1; makepkg -si --noconfirm >/dev/null) || return 1
   # Make sure *-git AUR packages get updated automatically.
   yay -Y --save --devel
 }
@@ -137,14 +133,11 @@ deploy_configs() {
 
   rm -f ~/.bashrc ~/.bash_*
 
-  (
-    cd "$DOTFILES_ROOT" || return 1
-    if [ -f .gitmodules ]; then
-      git submodule -q sync --recursive
-      git submodule -q update --init --recursive
-    fi
-    stow -R home -t ~
-  )
+  if [ -f .gitmodules ]; then
+    git submodule -q sync --recursive
+    git submodule -q update --init --recursive
+  fi
+  stow -R home -t ~
 
   # keyd config.
   sudo mkdir -p /etc/keyd
@@ -167,10 +160,10 @@ install_vim_plugins() {
 
 enable_services() {
   log_info "Enabling essential services..."
-  sudo systemctl enable --now keyd.service
-  sudo systemctl enable --now power-profiles-daemon
+  sudo systemctl enable --now keyd.service >/dev/null
+  sudo systemctl enable --now power-profiles-daemon >/dev/null
   systemctl --user daemon-reload
-  systemctl --user enable --now checkup.timer || true
+  systemctl --user enable --now checkup.timer >/dev/null || true
 }
 
 setup_github_ssh_key() {
@@ -179,7 +172,7 @@ setup_github_ssh_key() {
     BW_SESSION=$(bw login --raw)
     export BW_SESSION
   fi
-  bw sync --force
+  bw sync --force >/dev/null
   mkdir -p ~/.ssh
   (
     umask 077
@@ -235,5 +228,7 @@ trap cleanup EXIT
 trap error_handler ERR
 
 set -e
+
+cd "$(dirname "${BASH_SOURCE[0]}")" || exit 1
 
 main "$@"
