@@ -175,7 +175,7 @@ setup_ssh_keys() {
   bw get item github_ssh | jq -r .sshKey.privateKey >~/.ssh/id_ed25519
   bw get item github_ssh | jq -r .sshKey.publicKey >~/.ssh/id_ed25519.pub
   bw logout >/dev/null
-  ssh-keyscan github.com gitlab.com >~/.ssh/known_hosts
+  ssh-keyscan github.com gitlab.com >~/.ssh/known_hosts 2>/dev/null
   echo "AddKeysToAgent yes" >~/.ssh/config
   chmod 600 ~/.ssh/*
   chmod 644 ~/.ssh/{id_ed25519.pub,known_hosts}
