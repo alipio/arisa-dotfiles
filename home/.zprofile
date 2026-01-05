@@ -8,7 +8,7 @@ export VISUAL=$EDITOR
 export TERMINAL=alacritty
 export BROWSER=firefox
 export PAGER=less
-export MANPAGER="less --use-color -Dd+g -Du+r"
+export MANPAGER="less --use-color -Ddg -Du-*"
 
 export FZF_DEFAULT_OPTS="--height 60%"
 export LESSHISTFILE=-
