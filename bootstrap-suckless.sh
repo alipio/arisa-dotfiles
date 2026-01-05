@@ -28,15 +28,15 @@ PKGS=(
 AUR_PKGS=(asdf-vm nitrogen gtk-engine-murrine qt5-styleplugins)
 
 log_info() {
-  printf "==> %s\n" "$@"
+  printf "==> %s\n" "$*"
 }
 
 log_warn() {
-  printf "${YELLOW}[!] Warning:${NC} %s\n" "$@"
+  printf "${YELLOW}[!] %s${NC}\n" "$*"
 }
 
 log_error() {
-  printf "${RED}[X] Error:${NC} %s\n" "$@"
+  printf "${RED}[X] %s${NC}\n" "$*" >&2
 }
 
 cleanup() {
@@ -45,7 +45,8 @@ cleanup() {
 
 error_handler() {
   local exit_code=$?
-  log_error "Script failed with exit code $exit_code at line $LINENO"
+  local line_number=$1
+  log_error "Script failed with exit code $exit_code at line $line_number"
   exit $exit_code
 }
 
@@ -107,11 +108,11 @@ install_suckless() {
 install_bw_cli() {
   command -v bw >/dev/null && return 0
   log_info "Installing Bitwarden CLI..."
-  pushd "$TEMP_DIR" >/dev/null || return 1
+  pushd "$TEMP_DIR" >/dev/null
   curl -Lsf "https://bitwarden.com/download/?app=cli&platform=linux" -o bw.zip
   unzip -q bw.zip
   sudo install -m755 bw -t /usr/local/bin
-  popd >/dev/null || return 1
+  popd >/dev/null
 }
 
 install_yay() {
@@ -119,8 +120,8 @@ install_yay() {
   log_info "Installing yay (AUR helper)..."
   sudo pacman -S --needed --noconfirm base-devel git >/dev/null
   local yay_dir="$TEMP_DIR/yay"
-  git clone -q --depth 1 https://aur.archlinux.org/yay-bin.git "$yay_dir"
-  (cd "$yay_dir" || exit 1; makepkg -si --noconfirm >/dev/null) || return 1
+  git clone --quiet --depth 1 https://aur.archlinux.org/yay-bin.git "$yay_dir"
+  (cd "$yay_dir" && makepkg -si --noconfirm >/dev/null)
   # Make sure *-git AUR packages get updated automatically.
   yay -Y --save --devel
 }
@@ -134,8 +135,8 @@ deploy_configs() {
   rm -f ~/.bashrc ~/.bash_*
 
   if [ -f .gitmodules ]; then
-    git submodule -q sync --recursive
-    git submodule -q update --init --recursive
+    git submodule --quiet sync --recursive
+    git submodule --quiet update --init --recursive
   fi
   stow -R home -t ~
 
@@ -156,10 +157,10 @@ install_vim_plugins() {
 
 enable_services() {
   log_info "Enabling essential services..."
-  sudo systemctl enable --now keyd.service >/dev/null
-  sudo systemctl enable --now power-profiles-daemon >/dev/null
+  sudo systemctl --quiet --now enable keyd.service
+  sudo systemctl --quiet --now  enable power-profiles-daemon
   systemctl --user daemon-reload
-  systemctl --user enable --now checkup.timer >/dev/null || true
+  systemctl --quiet --user --now enable checkup.timer || true
 }
 
 setup_ssh_keys() {
@@ -174,8 +175,8 @@ setup_ssh_keys() {
   bw get item github_ssh | jq -r .sshKey.privateKey >~/.ssh/id_ed25519
   bw get item github_ssh | jq -r .sshKey.publicKey >~/.ssh/id_ed25519.pub
   bw logout >/dev/null
-  ssh-keyscan -H github.com gitlab.com >~/.ssh/known_hosts
-  printf "AddKeysToAgent yes\n" >~/.ssh/config
+  ssh-keyscan github.com gitlab.com >~/.ssh/known_hosts
+  echo "AddKeysToAgent yes" >~/.ssh/config
   chmod 600 ~/.ssh/*
   chmod 644 ~/.ssh/{id_ed25519.pub,known_hosts}
 }
@@ -219,10 +220,10 @@ main() {
 }
 
 trap cleanup EXIT
-trap error_handler ERR
+trap 'error_handler $LINENO' ERR
 
 set -e
 
-cd "$(dirname "${BASH_SOURCE[0]}")" || exit 1
+cd "$(dirname "${BASH_SOURCE[0]}")"
 
 main "$@"
