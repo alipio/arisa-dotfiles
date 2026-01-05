@@ -10,7 +10,7 @@ NC='\033[0m' # No Color
 TEMP_DIR=""
 PKGS=(
   base-devel git curl man-db less neovim stow libyaml
-  arandr autorandr picom libnotify dunst unclutter
+  arandr autorandr picom libnotify dunst xwallpaper unclutter
   xsel flameshot brightnessctl sxhkd redshift xdotool
   xorg-server xorg-xinit xorg-xprop xorg-xset xorg-xsetroot
   alacritty zsh zsh-syntax-highlighting diff-so-fancy helix
@@ -25,7 +25,7 @@ PKGS=(
   thunar-archive-plugin xarchiver 7zip unrar unzip xdg-utils zip
   thunar-volman gvfs gvfs-mtp udisks2
 )
-AUR_PKGS=(asdf-vm nitrogen gtk-engine-murrine qt5-styleplugins)
+AUR_PKGS=(asdf-vm gtk-engine-murrine qt5-styleplugins)
 
 log_info() {
   printf "==> %s\n" "$*"
