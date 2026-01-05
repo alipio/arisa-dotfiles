@@ -162,8 +162,8 @@ enable_services() {
   systemctl --user enable --now checkup.timer >/dev/null || true
 }
 
-setup_github_ssh_key() {
-  log_info "Setting up GitHub SSH key..."
+setup_ssh_keys() {
+  log_info "Setting up SSH keys..."
   if ! bw login --check 2>/dev/null; then
     BW_SESSION=$(bw login --raw)
     export BW_SESSION
@@ -177,7 +177,7 @@ setup_github_ssh_key() {
   ssh-keyscan -H github.com gitlab.com >~/.ssh/known_hosts
   printf "AddKeysToAgent yes\n" >~/.ssh/config
   chmod 600 ~/.ssh/*
-  chmod 644 ~/.ssh/known_hosts
+  chmod 644 ~/.ssh/{id_ed25519.pub,known_hosts}
 }
 
 set_zsh_as_default_shell() {
@@ -211,7 +211,7 @@ main() {
   deploy_configs
   install_vim_plugins
   enable_services
-  setup_github_ssh_key
+  setup_ssh_keys
   set_zsh_as_default_shell
 
   log_info "Bootstrap completed successfully!"
