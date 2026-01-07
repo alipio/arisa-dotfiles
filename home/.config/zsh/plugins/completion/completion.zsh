@@ -43,6 +43,9 @@ zstyle ':completion:*:*:*:users' ignored-patterns \
 # ... unless we really want to.
 zstyle '*' single-ignored show
 
+# Autocomplete custom git commands.
+zstyle ':completion:*:*:git:*' user-commands ${${(M)${(k)commands}:#git-*}/git-/}
+
 if [ "x$COMPLETION_WAITING_DOTS" = "xtrue" ]; then
   expand-or-complete-with-dots() {
     echo -n "\e[31m......\e[0m"

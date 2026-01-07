@@ -129,8 +129,10 @@ install_yay() {
 deploy_configs() {
   log_info "Deploying configs..."
 
-  mkdir -p ~/.{config,local}
-  mkdir -p ~/{screenshots,notes,Downloads,Documents,Music,Pictures,Videos}
+  mkdir -p ~/.{config,cache,local} \
+    ~/.local/{share,state} \
+    ~/.local/state/zsh \
+    ~/{screenshots,notes,Downloads,Documents,Music,Pictures,Videos}
 
   rm -f ~/.bashrc ~/.bash_*
 

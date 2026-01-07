@@ -1,35 +1,39 @@
-# Utility
+# Remove all previous environment defined aliases.
+unalias -a
 
-alias -g N='&>/dev/null'
+# Global aliases.
+alias -g dn='&>/dev/null'
 
+# General.
 alias less='less -R'
 alias ..='cd ../'
-alias reload='exec $SHELL'
-alias cls=clear
+alias reload='exec zsh'
 alias vim=nvim
+alias sudo='sudo ' # expand aliases with sudo.
+alias open='xdg-open'
 
-# Tell grep to highlight matches and avoid VCS folders
+# grep
 alias grep='grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn}'
 alias egrep='grep -E'
 alias fgrep='grep -F'
 
+# ls
 alias ls='ls --color=auto --group-directories-first'
-alias ll='ls -lh'
+alias ll='ls -lhF'
 alias la='ll -A'
 alias lt='ll -t'
 
 ##=========
 
 # Git
-
 alias gaa='git add -A'
 alias gco='git checkout'
 alias gcb='git checkout -b'
+alias gci='git commit'
 alias gcm='git commit -m'
-alias gci='git commit -v'
 alias gd='git diff'
 alias gdc='git diff --cached'
-alias gl='git pull'
+alias gpl='git pull'
 alias gp='git push'
 alias gpf='git push --force-with-lease'
-alias gs='git status'
+alias gs='git status -sb'

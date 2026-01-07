@@ -45,11 +45,15 @@ plugins=(
 zsh_load_plugins $plugins
 
 autoload -U compinit
-if [[ $HOME/.zcompdump(#qNmh-20) ]]; then
-  compinit -C
+zcdump="$HOME/.cache/zsh/zcompdump"
+if [[ $zcdump(#qNmh-20) ]]; then
+  compinit -C -d "$zcdump"
 else
-  compinit -i
+  mkdir -p "$zcdump:h"
+  compinit -d "$zcdump"
+  touch "$zcdump"
 fi
+unset zcdump
 
 # Local config
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local

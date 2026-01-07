@@ -1,4 +1,4 @@
-[ -z "$HISTFILE" ] && HISTFILE=$HOME/.zsh_history
+[ -z "$HISTFILE" ] && HISTFILE=~/.local/state/zsh/history
 HISTSIZE=11000
 SAVEHIST=10000
 
