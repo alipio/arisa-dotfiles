@@ -1,11 +1,13 @@
-setopt always_to_end     # Move cursor to the end of a completed word.
-setopt auto_menu         # Show completion menu on succesive tab press.
-setopt complete_in_word  # Complete from both ends of a word.
-setopt no_menu_complete  # Do not autoselect the first completion entry.
+setopt always_to_end        # Move cursor to the end of a completed word.
+setopt auto_menu            # Show completion menu on succesive tab press.
+setopt no_auto_remove_slash # Don't guess when slashes should be removed.
+setopt complete_in_word     # Complete from both ends of a word.
+setopt no_menu_complete     # Do not autoselect the first completion entry.
+
+autoload -U compinit && compinit
+zmodload -i zsh/complist
 
 WORDCHARS=''
-
-zmodload -i zsh/complist
 
 # case-insensitive (all),partial-word and then substring completion.
 if [ "x$CASE_SENSITIVE" = "xtrue" ]; then

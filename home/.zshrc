@@ -27,33 +27,27 @@ zsh_update_plugins() {
   done
 }
 
-setopt autocd
-setopt extendedglob
-setopt no_globdots
+setopt auto_cd
+setopt extended_glob
+setopt no_glob_dots
 setopt no_nomatch
 
 plugins=(
+  environment
   editor
-  completion
   history
-  aliases
   stack
   utils
-  prompt
   zsh-z
+  completion
+  aliases
+  prompt
 )
-zsh_load_plugins $plugins
 
-autoload -U compinit
-zcdump="$HOME/.cache/zsh/zcompdump"
-if [[ $zcdump(#qNmh-20) ]]; then
-  compinit -C -d "$zcdump"
-else
-  mkdir -p "$zcdump:h"
-  compinit -d "$zcdump"
-  touch "$zcdump"
-fi
-unset zcdump
+zsh_load_plugins $plugins
+unset plugins
+
+export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
 
 # Local config
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local

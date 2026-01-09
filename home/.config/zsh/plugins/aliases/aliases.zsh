@@ -2,30 +2,27 @@
 unalias -a
 
 # Global aliases.
-alias -g dn='&>/dev/null'
+alias -g N='&>/dev/null'
 
-# General.
+# Misc.
 alias less='less -R'
-alias ..='cd ../'
-alias reload='exec zsh'
-alias vim=nvim
-alias sudo='sudo ' # expand aliases with sudo.
-alias open='xdg-open'
-
-# grep
 alias grep='grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn}'
 alias egrep='grep -E'
 alias fgrep='grep -F'
+alias ..='cd ../'
+alias reload='exec zsh'
+alias vim='nvim'
+alias sudo='sudo ' # expand aliases with sudo.
+alias open='xdg-open'
 
-# ls
 alias ls='ls --color=auto --group-directories-first'
-alias ll='ls -lhF'
+alias ll='ls -lh'
 alias la='ll -A'
 alias lt='ll -t'
 
 ##=========
 
-# Git
+# Git.
 alias gaa='git add -A'
 alias gco='git checkout'
 alias gcb='git checkout -b'

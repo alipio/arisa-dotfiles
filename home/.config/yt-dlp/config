@@ -1,5 +1,5 @@
 --force-ipv4
 --cookies-from-browser firefox
---add-metadata
+--embed-metadata
 
 -o ~/Videos/YouTube/%(title)s.%(ext)s

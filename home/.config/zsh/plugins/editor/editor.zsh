@@ -1,6 +1,4 @@
-unsetopt beep
-
-stty -ixon # Disable ctrl-s to freeze terminal.
+setopt no_beep
 
 bindkey -e
 
@@ -21,8 +19,10 @@ bindkey "^[OF" end-of-line
 bindkey '^[[Z' reverse-menu-complete
 bindkey '^?' backward-delete-char
 bindkey "^[[3~" delete-char
+bindkey '^[[1;5C' forward-word
+bindkey '^[[1;5D' backward-word
 
-bindkey -s '\el' "ls\n"
+bindkey -s '\el' "^uls -lah --color=auto\n"
 bindkey '^r' history-incremental-search-backward
 bindkey '^Q' push-line-or-edit
 
