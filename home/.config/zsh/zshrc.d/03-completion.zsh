@@ -1,10 +1,9 @@
 setopt always_to_end        # Move cursor to the end of a completed word.
 setopt auto_menu            # Show completion menu on succesive tab press.
-setopt no_auto_remove_slash # Don't guess when slashes should be removed.
 setopt complete_in_word     # Complete from both ends of a word.
+setopt no_auto_remove_slash # Don't remove trailing slashs from directory names.
 setopt no_menu_complete     # Do not autoselect the first completion entry.
 
-autoload -U compinit && compinit
 zmodload -i zsh/complist
 
 WORDCHARS=''
@@ -19,10 +18,7 @@ fi
 
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 
-# should this be in keybindings?
-# bindkey -M menuselect '^o' accept-and-infer-next-history
-
-zstyle ':completion:*:*:*:*:*' menu select
+zstyle ':completion:*' menu select
 zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#) ([0-9a-z-]#)*=01;34=0=01'
 zstyle ':completion:*:*:*:*:processes' command "ps -u $LOGNAME -o pid,user,comm -w -w"
 

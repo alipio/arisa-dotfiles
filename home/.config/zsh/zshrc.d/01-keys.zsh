@@ -1,5 +1,3 @@
-setopt no_beep
-
 bindkey -e
 
 autoload -Uz up-line-or-beginning-search
@@ -22,7 +20,7 @@ bindkey "^[[3~" delete-char
 bindkey '^[[1;5C' forward-word
 bindkey '^[[1;5D' backward-word
 
-bindkey -s '\el' "^uls -lah --color=auto\n"
+bindkey -s '\el' "^ula\n"
 bindkey '^r' history-incremental-search-backward
 bindkey '^Q' push-line-or-edit
 

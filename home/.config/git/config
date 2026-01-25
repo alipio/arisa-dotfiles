@@ -1,15 +1,15 @@
+# General settings.
 [user]
   name = Alípio de Paula
   email = alipiodepaula@gmail.com
 
 [alias]
-  # Sometimes git is just retarded, so we try to make it "suckless"
-  unstage = reset -q HEAD --
+  log-fresh = log ORIG_HEAD.. --stat --no-merges
+  unstage = reset HEAD --
   discard = checkout --
-  giveup = !git reset --hard HEAD && git clean -df
-  uncommit = reset --mixed HEAD~
-  recommit = commit --amend --reuse-message=HEAD --date=now
-  amend = commit --amend -v
+  startover = !git reset --hard HEAD && git clean -df
+  uncommit = reset HEAD~
+  recommit = commit --amend --no-edit
   update = !sh -c 'git fetch origin && git rebase origin/${1-master}' -
   sync = !git update && git checkout master && git pull && git checkout @{-1}
 
@@ -47,8 +47,7 @@
 [url "https://github.com/"]
   insteadOf = gh:
 
-##=========
-
+# Command settings.
 [branch]
   sort = -committerdate
 
@@ -91,6 +90,7 @@
 
 [status]
   short = true
+  branch = true
   submoduleSummary = true
   showUntrackedFiles = all
 

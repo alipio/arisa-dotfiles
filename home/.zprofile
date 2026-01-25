@@ -1,13 +1,10 @@
-pathprepend() { for dir in $@; [[ -d $dir:A ]] && path=($dir:A $path) }
+path_prepend() { for dir in $@; [[ -d $dir:A ]] && path=($dir:A $path) }
 
 typeset -U path
-pathprepend ~/.local/bin ~/bin
+path_prepend ~/.local/bin ~/bin ~/.asdf/shims
 
-export LC_COLLATE=C
-export EDITOR=nvim
-export BROWSER=firefox
-export PAGER=less
-export QT_QPA_PLATFORMTHEME=gtk3      # Have QT use gtk3 theme.
+export LC_COLLATE=C.UTF-8             # Force sorting to be byte-wise.
+export QT_QPA_PLATFORMTHEME=gtk2      # Have QT use gtk2 theme.
 export MOZ_USE_XINPUT2=1              # Mozilla smooth scrolling/touchpads.
 export _JAVA_AWT_WM_NONREPARENTING=1  # Fix for Java applications in dwm.
 

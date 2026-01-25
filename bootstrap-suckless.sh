@@ -130,9 +130,8 @@ deploy_configs() {
   log_info "Deploying configs..."
 
   mkdir -p ~/.{config,cache,local} \
-    ~/.local/{share,state} \
-    ~/.local/state/zsh \
-    ~/{screenshots,notes,Downloads,Documents,Music,Pictures,Videos}
+    ~/.local/share \
+    ~/{code,screenshots,notes,Downloads,Documents,Music,Pictures,Videos}
 
   rm -f ~/.bashrc ~/.bash_*
 
