@@ -22,7 +22,7 @@ alias ll='ls -lh'
 alias la='ll -A'
 alias lt='ll -tr'
 
-# git
+# Git
 alias gaa='git add -A'
 alias gap='git add -p'
 alias gb='git branch'
