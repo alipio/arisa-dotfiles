@@ -1,3 +1,6 @@
 [submodule "home/.config/zsh/plugins/zsh-z"]
 	path = home/.config/zsh/plugins/zsh-z
 	url = https://github.com/agkozak/zsh-z.git
+[submodule "home/.config/zsh/prompt"]
+	path = home/.config/zsh/prompt
+	url = https://github.com/sindresorhus/pure.git
