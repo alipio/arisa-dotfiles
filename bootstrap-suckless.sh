@@ -9,20 +9,20 @@ NC='\033[0m' # No Color
 
 TEMP_DIR=""
 PKGS=(
-  base-devel git curl man-db less neovim stow libyaml
+  base-devel libyaml git curl zsh neovim man-db less stow
   arandr autorandr picom libnotify dunst xwallpaper unclutter
   xsel flameshot brightnessctl sxhkd redshift xdotool
   xorg-server xorg-xinit xorg-xprop xorg-xset xorg-xsetroot
-  alacritty zsh zsh-syntax-highlighting diff-so-fancy helix
-  btop fzf ripgrep jq bat ncdu reflector pacman-contrib openssh rsync
-  plocate moreutils acpi sysstat nsxiv mpv ffmpeg yt-dlp fastfetch
-  lxappearance firefox galculator zathura zathura-pdf-mupdf zathura-cb
+  alacritty btop fzf ripgrep jq bat ncdu tree plocate moreutils
+  zsh-syntax-highlighting diff-so-fancy fastfetch openssh rsync
+  nsxiv mpv ffmpeg yt-dlp acpi sysstat reflector pacman-contrib
+  firefox lxappearance zathura zathura-pdf-mupdf zathura-cb galculator
   cantarell-fonts ttf-dejavu ttf-jetbrains-mono-nerd
   noto-fonts noto-fonts-emoji noto-fonts-cjk noto-fonts-extra
   pulseaudio pulseaudio-alsa alsa-utils pavucontrol
-  gnome-keyring polkit-gnome keyd power-profiles-daemon
+  polkit-gnome gnome-keyring power-profiles-daemon keyd
   thunar thunar-media-tags-plugin tumbler poppler-glib
-  thunar-archive-plugin xarchiver 7zip unrar unzip xdg-utils zip
+  thunar-archive-plugin xarchiver zip unrar unzip xdg-utils
   thunar-volman gvfs gvfs-mtp udisks2
 )
 AUR_PKGS=(asdf-vm gtk-engine-murrine qt5-styleplugins)
