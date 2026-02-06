@@ -4,14 +4,46 @@
   email = alipiodepaula@gmail.com
 
 [alias]
-  log-fresh = log ORIG_HEAD.. --stat --no-merges
-  unstage = reset HEAD --
+  aa = add ':(exclude,attr:builtin_objectmode=160000)'
+  ap = add -p
+  br = branch
+  ci = commit
+  cm = "!f() { git commit -m \"$*\"; }; f"
+  co = checkout
+  cp = cherry-pick
+  d = diff
+  dc = diff --cached
+  f = fetch origin
+  fu = !git commit --fixup $(git rev-parse HEAD)
+  ico = !git branch --no-color --sort=-committerdate --format='%(refname:short)' \
+    | grep -vxF "$(git branch --show-current)" \
+    | fzf \
+    | ifne xargs git checkout
+  la = !git lg --all
+  lg = log --graph --abbrev-commit --pretty=format:'%C(yellow bold)%h%Creset by %C(red)%an%Creset (%ar)%C(cyan bold)%d%Creset%n%s%n%b'
+  mt = mergetool
+  nb = checkout -b
+  p = push
+  pur = pull --rebase=merges
+  ra = rebase --abort
+  rc = rebase --continue
+  ri = rebase -i master
+  rs = rebase --skip
+  st = !git status -s && git diff --shortstat
+  su = submodule update --init
+  wc = log ORIG_HEAD.. --stat --no-merges
+
+  abort = !git discard .
+  amend = commit --amend --no-edit
+  clean = "!git branch --no-color --merged | grep -vF '*' | xargs -n 1 git branch -d"
   discard = checkout --
+  force = push --force-with-lease
+  master = checkout master
   startover = !git reset --hard HEAD && git clean -df
-  uncommit = reset HEAD~
-  recommit = commit --amend --no-edit
-  update = !sh -c 'git fetch origin && git rebase origin/${1-master}' -
-  sync = !git update && git checkout master && git pull && git checkout @{-1}
+  sync = !git update && git master && git pull && git co '@{-1}'
+  unadd = reset HEAD --
+  uncommit = reset --soft HEAD~
+  update = "!f() { git fetch origin && git rebase --rebase-merges origin/${1:-master}; }; f"
 
 [core]
   autocrlf = input
@@ -41,11 +73,11 @@
   new = green bold
   whitespace = red reverse
 
-[column]
-  ui = auto
-
 [url "https://github.com/"]
   insteadOf = gh:
+
+[url "git@github.com:"]
+  pushInsteadOf = https://github.com/
 
 # Command settings.
 [branch]
@@ -56,43 +88,42 @@
 
 [diff]
   algorithm = histogram
-  colorMoved = plain
-  mnemonicPrefix = true
-  renames = true
+  noPrefix = true
+  colorMoved = default
   submodule = log
 
 [fetch]
   prune = true
   pruneTags = true
-  all = true
 
 [help]
-  autoCorrect = prompt
+  autoCorrect = 10
 
 [log]
   abbrevCommit = true
 
+[merge]
+  tool = nvimdiff
+  conflictStyle = diff3
+
+[mergetool "nvimdiff"]
+  trustExitCode = true
+  keepBackup = false
+
 [pull]
-  rebase = true
+  ff = only
 
 [push]
   default = current
   autoSetupRemote = true
-  followTags = true
 
 [rebase]
   autoSquash = true
   autoStash = true
-  updateRefs = true
 
 [rerere]
   enabled = true
 
 [status]
-  short = true
-  branch = true
   submoduleSummary = true
   showUntrackedFiles = all
-
-[tag]
-  sort = version:refname

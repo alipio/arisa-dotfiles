@@ -1,12 +1,7 @@
-#compdef unarchive
-#autoload
+#compdef extract
 
-#
-# Completes unarchive.
-#
 # Authors:
 #   Sorin Ionescu <sorin.ionescu@gmail.com>
-#
 
 _arguments \
   '(-r --remove)'{-r,--remove}'[remove archive]' \

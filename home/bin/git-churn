@@ -27,6 +27,11 @@
 #
 # (These are all standard arguments to `git log`.)
 
+set -o pipefail
 set -e
-git log --all -M -C --name-only --format=format: "$@" | sort | grep -v '^$' |
-  uniq -c | sort -n
+
+git log --all -M -C --name-only --format=format: "$@" \
+  | sort \
+  | grep -v '^$' \
+  | uniq -c \
+  | sort -n

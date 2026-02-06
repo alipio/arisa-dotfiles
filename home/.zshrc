@@ -20,29 +20,27 @@ for rc in ~/.config/zsh/zshrc.d/*.zsh(N); do
 done
 unset rc
 
-zshauto=(
-  /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+for f in \
+  /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh \
   /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-)
-for p in $zshauto; do
-  if [[ -f "$p" ]]; then
-    source "$p"; unset ZSH_AUTOSUGGEST_USE_ASYNC; break
+do
+  if [[ -f "$f" ]]; then
+    source "$f"; unset ZSH_AUTOSUGGEST_USE_ASYNC; break
   fi
 done
-unset p zshauto
+unset f
 
-zshsyntax=(
-  ~/.config/zsh/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
-  /usr/share/zsh/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
-  /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+for f in \
+  ~/.config/zsh/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh \
+  /usr/share/zsh/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh \
+  /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh \
   /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-)
-for p in $zshsyntax; do
-  if [[ -f "$p" ]]; then
-    source "$p"; break
+do
+  if [[ -f "$f" ]]; then
+    source "$f"; break
   fi
 done
-unset p zshsyntax
+unset f
 
 ZSHZ_CASE=smart
 source ~/.config/zsh/plugins/zsh-z/zsh-z.plugin.zsh

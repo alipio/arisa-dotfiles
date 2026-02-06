@@ -5,7 +5,7 @@
 #   Sorin Ionescu <sorin.ionescu@gmail.com>
 #
 
-# function unarchive {
+# function extract {
 
 local remove_archive
 local success
